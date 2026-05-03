@@ -1,6 +1,6 @@
 ---
 name: to-functional-spec
-description: Produce a functional spec — a document that defines what a system does and how it behaves from the user's perspective, with no source code, types, or technology choices. Applies to any kind of system: CLI, API, library, web app, mobile app, embedded device, internal service, etc. Triggers include "functional spec", "behavior spec", "product spec", "what should X do".
+description: "Produce a functional spec — a document that defines what a system does and how it behaves from the user's perspective, with no source code, types, or technology choices. Applies to any kind of system: CLI, API, library, web app, mobile app, embedded device, internal service, etc. Triggers include \"functional spec\", \"behavior spec\", \"product spec\", \"what should X do\"."
 ---
 
 A functional spec describes **what** the system does and **how it behaves from the user's perspective**. It defines product behavior only — no source code, no types, no interface signatures, no technology choices. Implementation lives elsewhere.

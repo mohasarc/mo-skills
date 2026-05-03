@@ -1,6 +1,6 @@
 ---
 name: to-stages
-description: Produce a staged plan that breaks an iterative effort into independently releasable stages, with no code or implementation details. Use for any iterative effort: new project, new feature, refactor, migration, or sustained bug-fix campaign. Triggers include "stages document", "staged plan", "implementation stages", "roadmap", "let's break this into stages".
+description: "Produce a staged plan that breaks an iterative effort into independently releasable stages, with no code or implementation details. Use for any iterative effort: new project, new feature, refactor, migration, or sustained bug-fix campaign. Triggers include \"stages document\", \"staged plan\", \"implementation stages\", \"roadmap\", \"let's break this into stages\"."
 ---
 
 A staged plan describes **how we get there** for an iterative effort: it takes a stated goal and breaks the path to it into independently releasable stages, ordered by what unlocks what.
