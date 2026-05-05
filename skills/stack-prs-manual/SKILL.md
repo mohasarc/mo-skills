@@ -39,6 +39,7 @@ Default: refuse to start any stack operation if `git status --porcelain` is non-
 - **Stack root PR** (`base == development`): not draft. Hidden marker in the PR body: `<!-- stack-skill:root -->` plus a brief "do not delete; tracks this PR as the bottom of a stack" note. Marker is decorative; lineage is the source of truth.
 - **Downstream PR** (`base != development`): always opened as **Draft** via `gh pr create --draft --base <parent-branch>`.
 - **Stacked-on comment** is posted on every PR in the stack on PR open and updated on every topology change. See template below.
+- **PR body follows the repo's PR template** when one exists. Check `.github/PULL_REQUEST_TEMPLATE.md`, `.github/PULL_REQUEST_TEMPLATE/*.md`, `PULL_REQUEST_TEMPLATE.md`, and `docs/pull_request_template.md`. If multiple templates exist, pick the one that fits the change. Fill in narrative sections (Summary, Context, etc.). **Do not tick user-action checkboxes** like `- [ ] Tested locally` or `- [ ] Added tests` — leave them as `[ ]` for the user to confirm; the agent has not personally satisfied those items. The hidden root marker (for the root PR) goes at the very bottom, below the template body. If no template exists, fall back to a minimal description.
 
 ## The stacked-on comment
 
