@@ -1,0 +1,207 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ENV_FILE="$SKILL_DIR/.env"
+TMP_DIR="$SKILL_DIR/tmp"
+ENDPOINT="https://api.linear.app/graphql"
+ALLOWED_HOST_SUFFIX=".linear.app"
+
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  linear-read query '<graphql>' [--vars '<json>']
+  linear-read query [--vars '<json>'] < query.graphql
+  linear-read fetch '<url>' [-o <path>]
+
+Reads LINEAR_API_KEY from .env in the parent skill directory.
+
+query:
+  Stdout: GraphQL response body (including any "errors" array).
+
+fetch:
+  Downloads a Linear-hosted attachment (host must end in .linear.app).
+  Default output: <skill>/tmp/<basename>.<ext>, extension derived from
+  Content-Type. Pass -o to override the path. Resolved path printed to stderr.
+
+Stderr: transport, auth, or config errors. Never the auth header.
+
+Exit codes:
+  0  HTTP 200
+  1  config error (.env missing, key empty, bad invocation, disallowed host)
+  2  network or non-2xx HTTP error
+  3  authentication failure (HTTP 401/403)
+EOF
+}
+
+load_api_key() {
+  if [[ ! -f "$ENV_FILE" ]]; then
+    echo "linear-read: .env not found in $SKILL_DIR" >&2
+    echo "Create it with one line: LINEAR_API_KEY=lin_api_..." >&2
+    exit 1
+  fi
+  LINEAR_API_KEY=""
+  # shellcheck disable=SC1090
+  . "$ENV_FILE"
+  if [[ -z "${LINEAR_API_KEY:-}" ]]; then
+    echo "linear-read: LINEAR_API_KEY not set in $ENV_FILE" >&2
+    exit 1
+  fi
+}
+
+run_query() {
+  load_api_key
+
+  local QUERY="" VARS=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --vars)
+        [[ $# -ge 2 ]] || { echo "linear-read: --vars requires a JSON argument" >&2; exit 1; }
+        VARS="$2"
+        shift 2
+        ;;
+      -h|--help) usage; exit 0 ;;
+      *) QUERY="$1"; shift ;;
+    esac
+  done
+
+  if [[ -z "$QUERY" ]]; then
+    if [[ -t 0 ]]; then
+      echo "linear-read: no query (pass as argument or pipe via stdin)" >&2
+      exit 1
+    fi
+    QUERY="$(cat)"
+  fi
+
+  local PAYLOAD
+  if [[ -n "$VARS" ]]; then
+    PAYLOAD=$(jq -n --arg q "$QUERY" --argjson v "$VARS" '{query:$q, variables:$v}')
+  else
+    PAYLOAD=$(jq -n --arg q "$QUERY" '{query:$q}')
+  fi
+
+  local RESP HTTP_STATUS BODY
+  RESP=$(curl -sS -w $'\n%{http_code}' \
+    -X POST "$ENDPOINT" \
+    -H "Authorization: $LINEAR_API_KEY" \
+    -H "Content-Type: application/json" \
+    --data-binary "$PAYLOAD") || {
+      echo "linear-read: network error contacting $ENDPOINT" >&2
+      exit 2
+    }
+
+  HTTP_STATUS="${RESP##*$'\n'}"
+  BODY="${RESP%$'\n'*}"
+
+  case "$HTTP_STATUS" in
+    200) printf '%s\n' "$BODY" ;;
+    401|403)
+      echo "linear-read: authentication failed (HTTP $HTTP_STATUS); check LINEAR_API_KEY in $ENV_FILE" >&2
+      exit 3
+      ;;
+    *)
+      echo "linear-read: HTTP $HTTP_STATUS from $ENDPOINT" >&2
+      printf '%s\n' "$BODY" >&2
+      exit 2
+      ;;
+  esac
+}
+
+extension_for_content_type() {
+  local ct="${1%%;*}"
+  ct="${ct// /}"
+  case "$ct" in
+    image/png)     echo "png" ;;
+    image/jpeg)    echo "jpg" ;;
+    image/gif)     echo "gif" ;;
+    image/webp)    echo "webp" ;;
+    image/svg+xml) echo "svg" ;;
+    application/pdf) echo "pdf" ;;
+    video/mp4)     echo "mp4" ;;
+    *) echo "" ;;
+  esac
+}
+
+run_fetch() {
+  load_api_key
+
+  local URL="" OUT=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -o)
+        [[ $# -ge 2 ]] || { echo "linear-read: -o requires a path argument" >&2; exit 1; }
+        OUT="$2"
+        shift 2
+        ;;
+      -h|--help) usage; exit 0 ;;
+      *) URL="$1"; shift ;;
+    esac
+  done
+
+  if [[ -z "$URL" ]]; then
+    echo "linear-read: fetch requires a URL" >&2
+    exit 1
+  fi
+
+  local HOST
+  HOST=$(printf '%s' "$URL" | awk -F/ '{print $3}' | awk -F: '{print $1}')
+  if [[ -z "$HOST" || ( "$HOST" != *"$ALLOWED_HOST_SUFFIX" && "$HOST" != "${ALLOWED_HOST_SUFFIX#.}" ) ]]; then
+    echo "linear-read: refusing to fetch non-Linear host '$HOST' (allowed: *$ALLOWED_HOST_SUFFIX)" >&2
+    exit 1
+  fi
+
+  local HEADERS_FILE TMP_BODY
+  HEADERS_FILE=$(mktemp)
+  TMP_BODY=$(mktemp)
+  trap "rm -f '$HEADERS_FILE' '$TMP_BODY'" EXIT
+
+  local HTTP_STATUS
+  HTTP_STATUS=$(curl -sS -D "$HEADERS_FILE" -o "$TMP_BODY" -w '%{http_code}' \
+    -H "Authorization: $LINEAR_API_KEY" \
+    "$URL") || {
+      rm -f "$TMP_BODY"
+      echo "linear-read: network error contacting $URL" >&2
+      exit 2
+    }
+
+  case "$HTTP_STATUS" in
+    200) ;;
+    401|403)
+      rm -f "$TMP_BODY"
+      echo "linear-read: authentication failed (HTTP $HTTP_STATUS); check LINEAR_API_KEY in $ENV_FILE" >&2
+      exit 3
+      ;;
+    *)
+      rm -f "$TMP_BODY"
+      echo "linear-read: HTTP $HTTP_STATUS from $URL" >&2
+      exit 2
+      ;;
+  esac
+
+  if [[ -z "$OUT" ]]; then
+    local CONTENT_TYPE EXT BASENAME
+    CONTENT_TYPE=$(awk 'BEGIN{IGNORECASE=1} /^content-type:/{sub(/^[^:]*:[[:space:]]*/,""); gsub(/\r/,""); print; exit}' "$HEADERS_FILE")
+    EXT=$(extension_for_content_type "$CONTENT_TYPE")
+    BASENAME=$(printf '%s' "$URL" | awk -F/ '{print $NF}' | awk -F? '{print $1}')
+    [[ -n "$BASENAME" ]] || BASENAME="download"
+    mkdir -p "$TMP_DIR"
+    if [[ -n "$EXT" ]]; then
+      OUT="$TMP_DIR/$BASENAME.$EXT"
+    else
+      OUT="$TMP_DIR/$BASENAME"
+    fi
+  else
+    mkdir -p "$(dirname "$OUT")"
+  fi
+
+  mv "$TMP_BODY" "$OUT"
+  echo "linear-read: saved $OUT" >&2
+}
+
+case "${1:-}" in
+  query) shift; run_query "$@" ;;
+  fetch) shift; run_fetch "$@" ;;
+  -h|--help) usage; exit 0 ;;
+  *) usage; exit 1 ;;
+esac
