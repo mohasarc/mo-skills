@@ -16,7 +16,11 @@ A **stack** is a chain (or tree) of branches where each branch's PR targets the 
 - **Walk up** from any branch: `gh pr view <branch> --json baseRefName` → if `baseRefName != development`, recurse on the parent. Stop at `development`.
 - **Walk down**: `gh pr list --base <branch> --state open --json number,headRefName,baseRefName` → recurse on each child. Branching trees are allowed (one parent, many children).
 
-**The rebase contract.** Every restack uses `git rebase` with `--force-with-lease`. The skill does **not** fall back to merge to "preserve reviews." Reviewers are warned upfront, in the auto-maintained stack comment, that downstream branches will be force-pushed when upstream lands and inline review comments may go "outdated." Reviewing a stacked draft PR means accepting that contract.
+**The rebase contract — and its exception.** Restacks default to `git rebase` with `--force-with-lease`. Reviewers of stacked **draft** PRs are warned upfront, in the auto-maintained stack comment, that downstream branches will be force-pushed when upstream lands and inline review comments may go "outdated"; reviewing a stacked draft PR means accepting that contract.
+
+**Once a PR has received a review** (any submitted review — `COMMENTED`, `APPROVED`, or `CHANGES_REQUESTED`), the contract flips: **do not rewrite its history**. To bring fresher upstream into a reviewed branch, use `git merge`, not `git rebase`, so existing inline review anchors stay live. New commits on top remain fine — they're additive, not history-rewriting. The rebase path applies only to branches whose PR is still draft and unreviewed.
+
+This matters most for **stack roots**, which typically collect reviews while downstream draft branches are still in flight. Once a root is reviewed, it can only be **merged-into**; the cascade still rebases unreviewed downstream drafts as usual. Check review state with `gh pr view <branch> --json reviews --jq '.reviews | length'` before deciding rebase vs merge.
 
 ## Detecting intent
 
@@ -24,8 +28,9 @@ The agent reads the situation and proposes the right action:
 
 - On `development` with uncommitted changes and the user signals new work → propose creating a new branch (this will be a **stack root**; nothing stack-specific happens until a downstream branch is added).
 - On a branch whose PR's base is another branch (or whose branch already has one or more downstream PRs), with uncommitted changes and the user signals new work → propose a **downstream branch** off the current one.
-- New commits land on a branch that has downstream PRs (open) → propose a **cascade restack** of the downstream subtree.
-- An upstream PR was merged to `development` (detected via `gh pr view <upstream> --json state,mergedAt,headRefOid`) and the immediate downstream's base still points at the merged branch → propose **retarget**: rebase `--onto development` using the merged PR's `headRefOid`, change base to `development`, mark ready for review (un-draft).
+- New commits land on a branch that has downstream PRs (open) → propose a **cascade restack** of the downstream subtree (per-child, rebase if the child's PR is unreviewed-draft, merge if it has any review).
+- The user wants fresher upstream content in a branch whose PR has received any review → propose **merge** (`git merge origin/<base>`), never rebase. Force-push is forbidden once a PR has been reviewed.
+- An upstream PR was merged to `development` (detected via `gh pr view <upstream> --json state,mergedAt,headRefOid`) and the immediate downstream's base still points at the merged branch → propose **retarget**: rebase `--onto development` using the merged PR's `headRefOid`, change base to `development`, mark ready for review (un-draft). Only valid when the immediate downstream is still draft/unreviewed; if it has reviews, retarget via `gh pr edit --base development` and `git merge origin/development` instead.
 - The user asks for stack status → walk topology and print the tree.
 
 Always **ask before** taking destructive actions (force-push, rebase). Cascade confirmation is **once per cascade**, not per branch. Inside an approved cascade, force-push is silent except on lease failure.
@@ -84,20 +89,42 @@ User is on a branch with a PR (call it `parent`), wants to start work that build
 6. Post the stacked-on comment on the new PR.
 7. Update the stacked-on comment on every other open PR in the stack to include the new node.
 
-## Workflow: restacking after upstream changes (mid-review)
+## Workflow: bringing fresher upstream into a single branch (no downstream)
 
-User pushed new commits to `parent` (review feedback) while `parent` is still open. Children are stale.
+The user wants to update one branch with new commits from its base (e.g. `development` shipped the API change you depend on). The path forks on review state:
+
+```bash
+gh pr view <branch> --json reviews --jq '.reviews | length'
+```
+
+- **`0` reviews** (draft, never reviewed) → **rebase** path:
+  1. `git fetch origin <base>`
+  2. `git rebase origin/<base>` (resolve any conflicts manually — never auto-resolve)
+  3. `git push --force-with-lease`
+- **`> 0` reviews** (any submitted review) → **merge** path:
+  1. `git fetch origin <base>`
+  2. `git merge origin/<base>` (resolve any conflicts manually)
+  3. `git push` (plain push — never `--force`)
+
+The merge commit is fine; the repo squash-merges PRs at land time, so it disappears from `development`'s history anyway. Inline review anchors stay live because no history is rewritten.
+
+## Workflow: cascade-restacking downstream after upstream changes
+
+User pushed new commits to `parent` (review feedback or a merge from base) while `parent` is still open. Children are stale.
 
 1. Walk down from `parent` to enumerate open downstream PRs in topology order (BFS).
-2. List the cascade plan to the user — every branch that will be force-pushed — and ask once for confirmation.
-3. For each downstream `child` in order:
+2. **For each child, check review state** (`gh pr view <child-branch> --json reviews --jq '.reviews | length'`). The child's path depends on its own review state, not the parent's:
+   - `0` reviews → **rebase** path (force-push needed).
+   - `> 0` reviews → **merge** path (no force-push).
+3. List the cascade plan to the user — flag which children will be force-pushed (rebase) vs. plain-pushed (merge) — and ask once for confirmation.
+4. For each downstream `child` in order:
    1. `git fetch origin <parent-branch>`
    2. `git checkout <child-branch>`
-   3. `git rebase origin/<parent-branch>` (plain rebase: parent's individual commits still exist, so merge-base resolves correctly).
-   4. On conflict: stop, do **not** auto-resolve. Summarize which files conflict and which commits are involved (the conflicting commit on `child` vs. the relevant commit(s) on `parent`). Tell the user the standard `git rebase --continue / --abort` flow. Leave the cascade in a partially-restacked state; agent reports `✓ d1 ✗ d2 ⏸ d3 d4` and waits for the user to resolve and re-invoke.
-   5. `git push --force-with-lease origin <child-branch>`. If the lease fails, stop and ask — never plain `--force`.
-   6. After the child is restacked, set `parent-branch = child-branch` for the next iteration if walking depth-first; otherwise BFS-walk all children of the just-restacked node.
-4. After cascade: refresh the stacked-on comment on every open PR.
+   3. **Rebase path** (unreviewed child): `git rebase origin/<parent-branch>` then `git push --force-with-lease`. If the lease fails, stop and ask — never plain `--force`.
+   4. **Merge path** (reviewed child): `git merge origin/<parent-branch>` then `git push` (plain).
+   5. On conflict (either path): stop, do **not** auto-resolve. Summarize which files conflict and which commits are involved. Tell the user the standard `git rebase --continue / --abort` (or `git merge --continue / --abort`) flow. Leave the cascade in a partially-restacked state; agent reports `✓ d1 ✗ d2 ⏸ d3 d4` and waits for the user to resolve and re-invoke.
+   6. After the child is updated, walk into its own children and repeat.
+5. After cascade: refresh the stacked-on comment on every open PR.
 
 ## Workflow: retargeting after an upstream merges to development
 
@@ -121,6 +148,7 @@ The fix uses `--onto` with the merged PR's preserved `headRefOid`. Note the **or
 ## Hard rules
 
 - Never `git push --force` without `--lease`. If the lease fails, stop and ask.
+- **Never rewrite history on a PR that has received any review** (`COMMENTED`, `APPROVED`, or `CHANGES_REQUESTED`). Use `git merge` to bring in upstream; new commits on top are fine. The rebase + force-push contract applies only to draft, unreviewed PRs. Always check `gh pr view <branch> --json reviews --jq '.reviews | length'` before any rebase that brings in upstream changes.
 - Never rewrite history on a branch that does not belong to the user's current stack.
 - Never auto-resolve rebase conflicts. Always stop, summarize, hand back to the user.
 - Never run a stack operation with a dirty working tree unless the user has consented to a stash.
@@ -137,7 +165,10 @@ The fix uses `--onto` with the merged PR's preserved `headRefOid`. Note the **or
 - `gh pr edit <num> --base development`
 - `gh pr ready <num>`
 - `gh api repos/:owner/:repo/issues/<num>/comments` (find/update the auto comment)
-- `git rebase origin/<parent>` (mid-review)
-- `git rebase --onto origin/development <OLD_TIP>` (post-merge retarget)
-- `git push --force-with-lease`
+- `gh pr view <branch> --json reviews --jq '.reviews | length'` (gate rebase vs merge — `0` allows rebase, `>0` requires merge)
+- `git rebase origin/<parent>` (cascade onto unreviewed-draft child)
+- `git merge origin/<parent>` (cascade onto reviewed child, OR pull fresher upstream into a reviewed branch — no force-push afterward)
+- `git rebase --onto origin/development <OLD_TIP>` (post-merge retarget, only valid if downstream is unreviewed)
+- `git push --force-with-lease` (rebase path only)
+- `git push` (merge path — plain push)
 - `git stash push -u` / `git stash pop`
