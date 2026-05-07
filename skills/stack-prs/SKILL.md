@@ -40,8 +40,9 @@ For commands, see the `graphite` skill. The shape:
 
 1. First PR branches off `main`. Subsequent PRs branch off the current top of stack — that's what makes it a stack.
 2. Submit after each phase finishes green (`gt submit --no-interactive --draft`). Submitting per-phase is what unlocks parallel review.
-3. When a PR merges to `main`, sync (`gt sync`) and restack (`gt restack`) before continuing. Skipping this produces phantom conflicts.
-4. If the stack gets ~4–5 unmerged PRs deep, pause and check whether the human wants the bottom landed first.
+3. Sync (`gt sync`) at the **start** of every session, before making any commits — and again after a PR merges to `main`. Graphite auto-rebases your stack on the remote whenever a downstack PR merges, so yesterday's local may already be stale. If you build commits on a stale base and *then* run `gt sync`, sync favors the up-to-date remote and silently drops your unpushed local work.
+4. If you've already committed and only then notice the remote diverged: skip `gt sync`. Fetch and rebase manually — `git fetch origin <branch> && git rebase origin/<branch>` — then `gt submit`.
+5. If the stack gets ~4–5 unmerged PRs deep, pause and check whether the human wants the bottom landed first.
 
 ## The `gt` vs `gh` discipline
 
