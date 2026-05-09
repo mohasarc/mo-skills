@@ -293,16 +293,16 @@ flowchart LR
 | Skill | When | What it does |
 |---|---|---|
 | `architecture-review` | After PR opens | High-level review; flags issues. You paste findings as PR comments. |
-| `address-pr-comments` | After comments | Reads PR comments, asks for clarifications if needed, plans, then commits each change linked to its comment. |
+| `address-review` | After comments | Reads PR comments, asks for clarifications if needed, plans, then commits each change linked to its comment. |
 
-### Your comments and `architecture-review` comments merge into `address-pr-comments`.
+### Your comments and `architecture-review` comments merge into `address-review`.
 
 ```mermaid
 flowchart TD
     PR[(open PR)] --> Manual[your manual review comments]
     PR --> AR([architecture-review])
     AR --> AIC[AI comments]
-    Manual --> APR([address-pr-comments])
+    Manual --> APR([address-review])
     AIC --> APR
     APR --> Clean[(clean PR)]
 ```
@@ -317,7 +317,7 @@ journey
       architecture-review  : 5: AI
       Paste AI comments    : 3: You
     section Resolution
-      address-pr-comments  : 5: AI
+      address-review  : 5: AI
       Clean PR             : 5: You, AI
 ```
 
@@ -331,7 +331,7 @@ flowchart LR
     Start([any starting point]):::entry
 
     AR([architecture-review]):::skill
-    APR([address-pr-comments]):::skill
+    APR([address-review]):::skill
 
     PR[(open PR)] --> AR --> Comments[/your + AI comments on PR/] --> APR --> Done[(clean PR)]
 
@@ -349,7 +349,7 @@ sequenceDiagram
     actor You
     participant PR as Pull Request
     participant ARev as architecture-review
-    participant APC as address-pr-comments
+    participant APC as address-review
 
     You->>PR: open
     You->>PR: post manual review comments
@@ -373,7 +373,7 @@ stateDiagram-v2
     open --> commenting
     commenting --> commenting : you add review
     commenting --> commenting : architecture-review adds findings
-    commenting --> addressing : run address-pr-comments
+    commenting --> addressing : run address-review
     addressing --> addressing : clarify + commit per comment
     addressing --> clean : all resolved
     clean --> [*]
@@ -390,7 +390,7 @@ mindmap
       architecture-review
         AI comments
     Resolution
-      address-pr-comments
+      address-review
         clarifying Qs
         commit per comment
         link to source comment
@@ -407,7 +407,7 @@ gantt
     your review comments   :a2, after a1, 1
     architecture-review    :a3, after a1, 1
     paste AI comments      :a4, after a3, 1
-    address-pr-comments    :a5, after a4, 1
+    address-review    :a5, after a4, 1
     clean PR               :a6, after a5, 1
 ```
 
@@ -434,7 +434,7 @@ block-beta
     Clean["clean PR"]
     AR["architecture-review"]
     space
-    APR["address-pr-comments"]
+    APR["address-review"]
     PR --> AR
     PR --> Comments
     AR --> Comments
@@ -469,7 +469,7 @@ timeline
     Comment : your manual review
             : architecture-review run
             : AI comments pasted on PR
-    Address : address-pr-comments
+    Address : address-review
             : clarify if needed
             : commit per comment
     Done    : clean PR
