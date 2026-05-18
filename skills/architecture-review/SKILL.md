@@ -23,6 +23,12 @@ Execute strictly in order. Do not skip stages.
 - **Branch mode**: detect base by finding the local branch with the most-recent merge-base that is an ancestor of `HEAD`. Try `main`, `master`, then other local branches. If ambiguous → ask the user. `--base <ref>` overrides.
 - If diff vs base is empty → exit with one line. Nothing to review.
 
+**Computing the PR's actual diff.** Always use one of:
+- `gh pr diff <n>` (PR mode) — GitHub computes it from the merge-base, immune to branch staleness.
+- `git diff <base>...HEAD` (three dots) — diffs from the merge-base.
+
+Never `git diff <base>..HEAD` (two dots). Two-dot is tip-to-tip: if `base` has commits the PR branch hasn't merged in yet, those upstream changes appear *inverted* in the diff and look like the PR is reverting them. Same rule for stage 5's "read the full diff" and any per-file diff checks. `git log <base>..HEAD` (two dots) for the commit list is fine — that's a commit-set difference, not a tree diff.
+
 ### 2. Checkout (in-place)
 
 - If working tree is dirty (`git status --porcelain` non-empty) → abort with one line. Do not stash.
