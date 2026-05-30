@@ -1,0 +1,297 @@
+#!/usr/bin/env python3
+"""loom-watch — turn a public Loom video into a timestamped transcript + aligned frames.
+
+Usage: scripts/loom-watch <loom-url> [--fresh]
+
+Output lands in <skill>/tmp/<video-id>/:
+  transcript.vtt   raw Loom captions
+  frames/          one frame per caption cue, plus frames at every scene change
+  manifest.md      every cue and scene change linked to its frame, ordered by time
+
+Exit codes: 2 usage, 3 transcript endpoint, 4 VTT, 5 video URL, 6 ffmpeg/download.
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+import urllib.error
+import urllib.request
+
+SCENE_THRESHOLD = 0.1    # ffmpeg scene-change sensitivity; deliberately low,
+                         # screencast changes (a panel, a typed line) are subtle
+SCENE_MIN_SPACING = 1.5  # seconds; collapse a burst of scene changes (an
+                         # animation/transition) to one frame per this interval
+HAMMING_DUP = 6          # dHash distance (out of 256) at/below which two frames
+                         # count as the same image. Kept low on purpose: a
+                         # global hash can't tell a meaningful small change from
+                         # no change, so dedup only removes near-exact repeats —
+                         # the reader curates via the manifest, not this pass
+UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) loom-watch"
+
+SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def die(code, msg):
+    print(f"loom-watch: {msg}", file=sys.stderr)
+    sys.exit(code)
+
+
+def http(url, data=None, headers=None):
+    req = urllib.request.Request(url, data=data, headers={"User-Agent": UA, **(headers or {})})
+    if data is not None:
+        req.get_method = lambda: "POST"
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        return resp.read()
+
+
+def parse_video_id(url):
+    m = re.search(r"loom\.com/(?:share|embed)/([0-9a-f]+)", url)
+    return m.group(1) if m else None
+
+
+def fetch_transcript_url(video_id):
+    query = ("query FetchVideoTranscript($videoId: ID!) { "
+             "fetchVideoTranscript(videoId: $videoId) { "
+             "... on VideoTranscriptDetails { captions_source_url } } }")
+    body = json.dumps({"operationName": "FetchVideoTranscript",
+                       "variables": {"videoId": video_id},
+                       "query": query}).encode()
+    try:
+        raw = http("https://www.loom.com/graphql", data=body,
+                   headers={"Content-Type": "application/json"})
+        payload = json.loads(raw)
+    except (urllib.error.URLError, json.JSONDecodeError) as e:
+        die(3, f"transcript request failed ({e})")
+    node = (payload.get("data") or {}).get("fetchVideoTranscript") or {}
+    src = node.get("captions_source_url")
+    if not src:
+        die(3, "transcript endpoint returned no captions — video may be private, "
+               "password-protected, or still processing")
+    return src
+
+
+def fetch_video_url(video_id):
+    url = f"https://www.loom.com/api/campaigns/sessions/{video_id}/transcoded-url"
+    try:
+        raw = http(url, data=b"{}", headers={"Content-Type": "application/json"})
+        payload = json.loads(raw)
+    except (urllib.error.URLError, json.JSONDecodeError):
+        die(5, "could not resolve the video URL — the transcoded-url endpoint failed "
+               "(video may be private, or Loom changed the endpoint)")
+    mp4 = payload.get("url")
+    if not mp4:
+        die(5, "transcoded-url endpoint returned no URL — video may be private")
+    return mp4
+
+
+def ts_to_seconds(stamp):
+    parts = stamp.split(":")
+    parts = [float(p) for p in parts]
+    while len(parts) < 3:
+        parts.insert(0, 0.0)
+    return parts[0] * 3600 + parts[1] * 60 + parts[2]
+
+
+def parse_vtt(text):
+    """Return list of cues: (start_seconds, end_seconds, text)."""
+    cues = []
+    line_re = re.compile(r"(\d{1,2}:\d{2}:\d{2}\.\d+|\d{1,2}:\d{2}\.\d+)\s*-->\s*"
+                         r"(\d{1,2}:\d{2}:\d{2}\.\d+|\d{1,2}:\d{2}\.\d+)")
+    blocks = re.split(r"\n\s*\n", text.strip())
+    for block in blocks:
+        lines = [ln for ln in block.splitlines() if ln.strip()]
+        if not lines or lines[0].strip() == "WEBVTT":
+            continue
+        timing_idx = next((i for i, ln in enumerate(lines) if line_re.search(ln)), None)
+        if timing_idx is None:
+            continue
+        m = line_re.search(lines[timing_idx])
+        start, end = ts_to_seconds(m.group(1)), ts_to_seconds(m.group(2))
+        body = " ".join(lines[timing_idx + 1:])
+        body = re.sub(r"<[^>]+>", "", body).strip()
+        if body:
+            cues.append((start, end, body))
+    return cues
+
+
+def run(cmd, **kw):
+    return subprocess.run(cmd, capture_output=True, text=True, **kw)
+
+
+def video_duration(path):
+    res = run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+               "-of", "csv=p=0", path])
+    try:
+        return float(res.stdout.strip())
+    except ValueError:
+        die(6, "could not read video duration with ffprobe")
+
+
+def extract_frame(video, seconds, out_path):
+    run(["ffmpeg", "-nostdin", "-loglevel", "error", "-ss", f"{seconds:.3f}",
+         "-i", video, "-frames:v", "1", "-q:v", "3", "-y", out_path])
+    return os.path.exists(out_path)
+
+
+def scene_change_times(video):
+    res = run(["ffmpeg", "-nostdin", "-i", video, "-vf",
+               f"select='gt(scene,{SCENE_THRESHOLD})',showinfo", "-f", "null", "-"])
+    return [float(m) for m in re.findall(r"pts_time:([0-9.]+)", res.stderr)]
+
+
+def frame_phash(path):
+    """dHash: 17x16 grayscale, one bit per horizontal gradient (256 bits)."""
+    res = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "error", "-i", path,
+                          "-vf", "scale=17:16,format=gray", "-f", "rawvideo", "-"],
+                         capture_output=True)
+    data = res.stdout
+    if len(data) < 17 * 16:
+        return None
+    bits = 0
+    bit_index = 0
+    for row in range(16):
+        for col in range(16):
+            if data[row * 17 + col] > data[row * 17 + col + 1]:
+                bits |= 1 << bit_index
+            bit_index += 1
+    return bits
+
+
+def hamming(a, b):
+    return bin(a ^ b).count("1")
+
+
+def mmss(seconds):
+    return f"{int(seconds) // 60:02d}:{int(seconds) % 60:02d}"
+
+
+def main():
+    args = [a for a in sys.argv[1:]]
+    fresh = "--fresh" in args
+    urls = [a for a in args if not a.startswith("--")]
+    if len(urls) != 1:
+        die(2, "usage: loom-watch <loom-url> [--fresh]")
+
+    url = urls[0]
+    video_id = parse_video_id(url)
+    if not video_id:
+        die(2, f"could not parse a Loom video id from: {url}")
+
+    out_dir = os.path.join(SKILL_DIR, "tmp", video_id)
+    manifest_path = os.path.join(out_dir, "manifest.md")
+    if os.path.exists(manifest_path) and not fresh:
+        print(f"cached: {manifest_path}")
+        print("(pass --fresh to re-extract)")
+        return
+
+    for tool in ("ffmpeg", "ffprobe"):
+        if run(["which", tool]).returncode != 0:
+            die(6, f"{tool} not found on PATH — install with: brew install ffmpeg")
+
+    frames_dir = os.path.join(out_dir, "frames")
+    subprocess.run(["rm", "-rf", out_dir])
+    os.makedirs(frames_dir, exist_ok=True)
+
+    print(f"[1/6] fetching transcript for {video_id}")
+    vtt_url = fetch_transcript_url(video_id)
+    try:
+        vtt_text = http(vtt_url).decode("utf-8", "replace")
+    except urllib.error.URLError as e:
+        die(4, f"failed to download the VTT transcript ({e})")
+    if not vtt_text.lstrip().startswith("WEBVTT"):
+        die(4, "downloaded transcript was not valid WEBVTT")
+    vtt_path = os.path.join(out_dir, "transcript.vtt")
+    with open(vtt_path, "w") as f:
+        f.write(vtt_text)
+
+    cues = parse_vtt(vtt_text)
+    if not cues:
+        die(4, "transcript contained no caption cues")
+    print(f"      {len(cues)} caption cues")
+
+    print("[2/6] resolving video URL")
+    mp4_url = fetch_video_url(video_id)
+
+    print("[3/6] downloading video")
+    video_path = os.path.join(out_dir, "video.mp4")
+    try:
+        with urllib.request.urlopen(
+                urllib.request.Request(mp4_url, headers={"User-Agent": UA}),
+                timeout=300) as resp, open(video_path, "wb") as f:
+            f.write(resp.read())
+    except urllib.error.URLError as e:
+        die(6, f"video download failed ({e})")
+
+    duration = video_duration(video_path)
+
+    print("[4/6] extracting one frame per caption cue")
+    frames = []
+    for start, _end, text in cues:
+        seq = len(frames)
+        path = os.path.join(frames_dir, f"f{seq:03d}_{mmss(start).replace(':', '')}.png")
+        if extract_frame(video_path, start, path):
+            frames.append({"time": start, "path": path, "kind": "cue", "text": text})
+
+    print("[5/6] adding frames at scene changes")
+    # Scene detection runs over the whole video, not just un-narrated gaps: the
+    # load-bearing changes ("watch, I do it like this") happen mid-narration.
+    last_scene_t = None
+    for scene_t in scene_change_times(video_path):
+        if last_scene_t is not None and scene_t - last_scene_t < SCENE_MIN_SPACING:
+            continue
+        seq = len(frames)
+        path = os.path.join(frames_dir,
+                            f"f{seq:03d}_{mmss(scene_t).replace(':', '')}_scene.png")
+        if extract_frame(video_path, scene_t, path):
+            frames.append({"time": scene_t, "path": path, "kind": "scene", "text": ""})
+            last_scene_t = scene_t
+
+    print("[6/6] de-duplicating frames and writing manifest")
+    frames.sort(key=lambda fr: fr["time"])
+    kept = []
+    last_hash = None
+    for fr in frames:
+        h = frame_phash(fr["path"])
+        is_dup = (h is not None and last_hash is not None
+                  and hamming(h, last_hash) <= HAMMING_DUP)
+        if is_dup:
+            os.remove(fr["path"])
+            if fr["kind"] == "cue" and kept:
+                # keep the cue row, point it at the previous kept frame
+                fr["path"] = kept[-1]["path"]
+                fr["deduped"] = True
+                kept.append(fr)
+            continue
+        last_hash = h
+        kept.append(fr)
+
+    total_frame_files = len({fr["path"] for fr in kept})
+    rel = lambda p: os.path.relpath(p, out_dir)
+    lines = [
+        f"# loom-watch manifest — {video_id}",
+        "",
+        f"- Source: {url}",
+        f"- Duration: {mmss(duration)}",
+        f"- Caption cues: {len(cues)}",
+        f"- Frame files: {total_frame_files}",
+        f"- Transcript: {rel(vtt_path)}",
+        "",
+        "| time | frame | text |",
+        "|------|-------|------|",
+    ]
+    for fr in kept:
+        text = fr["text"].replace("|", "\\|") if fr["text"] else "_(visual change, no narration)_"
+        note = " _(dup)_" if fr.get("deduped") else ""
+        lines.append(f"| {mmss(fr['time'])} | {rel(fr['path'])}{note} | {text} |")
+    lines.append("")
+    with open(manifest_path, "w") as f:
+        f.write("\n".join(lines))
+
+    os.remove(video_path)
+    print(f"done: {manifest_path}")
+    print(f"      {total_frame_files} frame files, {len(cues)} caption cues")
+
+
+if __name__ == "__main__":
+    main()
