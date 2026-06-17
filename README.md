@@ -6,6 +6,15 @@ Fuzzy idea → spec → stages → phased plan → PR → reviewed merge.
 
 ---
 
+## Code understanding
+
+| Skill | When | What it does |
+|---|---|---|
+| `document-feature` | Need top-down feature documentation | Investigates an implementation and writes architecture docs with Mermaid diagrams. |
+| `trace-code-flow` | Need to follow a code path | Produces a compact pseudo-code gist of the real execution flow. |
+
+---
+
 ## Build flow
 
 | Skill | When | What it does |
@@ -476,4 +485,3 @@ timeline
 ```
 
 </details>
-
