@@ -49,7 +49,7 @@ section, you may leave the guidance comment in place (it renders
 invisibly on GitHub) or remove it.
 -->
 
-## Why
+## Context
 
 <!--
 1-2 sentences. The motivation, constraint, or anchoring decision the
@@ -116,20 +116,47 @@ move files, or introduce a new ownership boundary.
 Skip for single-file fixes, obvious small renames, docs-only edits,
 or when paths add no review signal.
 
-Form: a Unicode filesystem tree anchored at repo root, in a
-```text fence. Use `.` as the root. Include unchanged parent
-directories as context; annotate only nodes that matter for
-ownership or review.
+Form: embedded Change Tree SVG first, then the bare Change Tree in
+a collapsed details fallback. Do not leave the bare tree as the
+primary content.
+
+Author the Change Tree as a Unicode filesystem tree anchored at repo
+root. Use `.` as the root. Include unchanged parent directories as
+context; annotate only nodes that matter for ownership or review.
 
 Legend: `++` added, `**` changed, `~~` moved, `--` removed.
 
-If config.md configures a PR tree embed capability, generate the
-embed with it, paste its output as the first content in this
-section, and keep the text tree below it in a collapsed
-<details><summary>Text fallback</summary> block. The fallback tree
-must match the rendered embed.
+Generate the embed with the CLI only:
 
-Example tree:
+  npx change-tree-svg embed -f tree.txt
+
+Copy/paste the command's generated `<pre>...</pre>` output exactly as
+the first content in this section. Do not write, edit, upload, or
+assemble SVG/image/embed markup by hand.
+
+Then add the same tree as a fallback:
+
+  <details>
+  <summary>Text fallback</summary>
+
+  ```text
+  .
+  ├── apps/
+  │   └── cli/
+  │       └── src/
+  │           └── ** register-context-command.ts # wires history flag
+  └── packages/
+      └── backend-typescript/
+          └── src/
+              ├── ++ reference-search/
+              │   └── ++ ... 12 files           # owns TS ref lookup
+              └── ~~ git/
+                  └── ~~ ... 3 files            # moved from apps/cli/src/history/
+  ```
+
+  </details>
+
+Raw Change Tree example:
 
   .
   ├── apps/
@@ -157,6 +184,7 @@ Rules:
     the same ownership.
   - Inline `# ...` comments should name purpose or ownership. Do not
     restate marker status except the required moved-from note.
+  - The fallback tree must match the rendered Change Tree.
 -->
 
 ## Public surface
@@ -168,8 +196,8 @@ wrong interface in seconds.
 
 Skip the section if the PR adds or changes no public surface.
 
-Form: signatures in the project's language, no bodies. Group by
-added / changed / removed if more than one category is present.
+Form: TypeScript signatures, no bodies. Group by added / changed /
+removed if more than one category is present.
 
   Added:
     class WorkspaceIgnore {
@@ -228,21 +256,20 @@ At least one pointer is usually honest; agents are bad at admitting
 uncertainty, so err toward listing one when in doubt.
 -->
 
-## Reading order
+## Visuals
+
+| Before (if any) | After     |
+| :-------------- | :-------- |
+| <img url>       | <img url> |
 
 <!--
-Commit list with one line each, placing each commit in the arc of
-the PR. Lets the reviewer hold the global thread while walking
-commits.
+If changes produce visual changes, place before/after screenshots
+here. Never commit image files. Upload them with the
+github-upload-image-to-pr+ skill once the PR exists — it uploads
+through the PR comment box and returns persistent
+user-attachments URLs; use those URLs here. Before a PR exists,
+keep the images uncommitted and reference them by local path so
+the upload step can find them. Skip the section if nothing is
+visual.
 
-Skip the section if the PR is a single commit.
-
-Form:
-  1. <commit title> — role of this commit in the arc.
-  2. <commit title> — role of this commit in the arc.
-
-Each caption is the commit's role in the bigger story, not a
-restatement of the commit message. "Adds the class itself" is fine;
-"Implements WorkspaceIgnore class with caching, matching, and path
-normalization" is not — that's the commit message's job.
 -->
