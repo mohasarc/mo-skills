@@ -13,16 +13,25 @@
 - Integration SHA:
 - Branch convention:
 - Verification commands:
+- User-imposed PR split: none
+
+## Open part
+
+- Branch:
+- Base SHA:
+- Phases in range:
 
 ## Proposed PRs
 
-| Group | Phases | Branch | Base branch | Base SHA | Target branch | Head SHA | Title | Status | Artifact folder |
+<!-- One row per cut part, appended when the grouper returns CUT / CUT_AT. -->
+
+| Part | Phases | Branch | Base branch | Base SHA | Target branch | Head SHA | Title | Status | Artifact folder |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Phase state
 
-| Phase | Prior SHA | Final SHA | Review verdict | Verification | Completion artifact | Unresolved findings |
-| --- | --- | --- | --- | --- | --- | --- |
+| Phase | Prior SHA | Final SHA | Step-end SHAs | Review verdict | Verification | Completion artifact | Grouping | Unresolved findings |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Publication state
 

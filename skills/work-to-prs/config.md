@@ -10,11 +10,12 @@ Model per agent role; harness picks defaults for unset roles.
 - Companion: default
 - Implementer: default
 - Reviewer: default
+- Grouper: default
 
 ## Publication
 What the `publish` command does. Implementation runs never push or open PRs by themselves.
 - Open draft PRs. (alternatives: open ready-for-review PRs / only push branches)
-- Publish all groups together when `publish` is run. (alternative: publish each group as soon as it passes final review)
+- Publish all parts together when `publish` is run. (alternative: publish each part as soon as it is cut and described)
 
 ## Runs
 Where run output lives (brief, plan, dialogue, reviews, completion notes, proposed PR descriptions).
@@ -32,6 +33,7 @@ Tools agents may use when configured.
 - Code navigation: none
 - Video links: none
 - PR tree embeds: none
+- PR image upload: none
 
 ## Extra guidance
 Freeform rules passed verbatim to every agent. Rules here override the workflow's defaults.
