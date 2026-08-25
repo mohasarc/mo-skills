@@ -10,7 +10,9 @@ A PR is sized by reviewer cognitive load, not by lines. Around 10–15 commits i
 
 ## `decide`
 
-Inputs: open range (last cut SHA → current phase head), phases in the range, the next phase's plan section, any user-imposed split recorded in run config.
+Inputs: open range (last cut SHA → current phase head), phases in the range, the next phase's plan section, carry-forward findings, any user-imposed split recorded in run config.
+
+Return `STACK` whenever material carry-forward findings remain. A part closes only after a later phase resolves them and review confirms the result.
 
 Return exactly one of:
 
@@ -30,4 +32,4 @@ You may reshape history to make a cut possible or cleaner — split one commit i
 
 Inputs: a cut group's base/head range, its commits, completion notes, phase review reports, checks, work-item link, and the repository PR template (use `templates/pr-description.md` only if none fits).
 
-Write `<pr-folder>/proposed-pr-description.md` from the diff and the notes, following the template's inline instructions and the repository writing rules. Use capabilities configured in `config.md` (e.g. PR tree embeds). Disclose unresolved `BEST_EFFORT` findings. In Visuals, reference screenshots from the completion notes by their local path under `visuals/`; publish uploads them. Return the title and the file path only.
+Write `<pr-folder>/proposed-pr-description.md` from the diff and the notes, following the template's inline instructions and the repository writing rules. Use capabilities configured in `config.md` (e.g. PR tree embeds). Never mention internal review rounds, verdict labels, review debt, or carry-forward state in the title or body. In Visuals, reference screenshots from the completion notes by their local path under `visuals/`; publish uploads them. Return the title and the file path only.

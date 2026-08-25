@@ -34,6 +34,7 @@ Edit `config.md` beside `SKILL.md`. It ships with working defaults; every line i
 - Reading work items — how input becomes a brief. Default: plain text is the work description. Point it at your tracker, e.g. "Use the linear-read skill for Linear IDs and URLs. Tracker is read-only."
 - Models — model per agent role (planner, companion, implementer, reviewer, grouper), e.g. "Planner: opus". Unset roles use the harness default.
 - Publication — what `publish` does (draft PRs / ready PRs / push only) and when (all at once on command / per part as each is cut).
+- Review — non-final phases get at most two reviewer rounds; material findings carry into the next phase, while the final phase reviews until it passes and clears them.
 - Runs — where run output lives and whether to keep it. Default: keep everything.
 - Conventions — integration branch, branch naming, verification commands. Left on "discover", the agent reads your repo docs and asks before recording what it found.
 - Capabilities — optional tools agents may use, all off by default.

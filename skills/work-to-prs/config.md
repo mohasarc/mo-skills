@@ -22,6 +22,12 @@ Where run output lives (brief, plan, dialogue, reviews, completion notes, propos
 - Folder: runs/ inside this skill folder, one subfolder per run, git-ignored.
 - Retention: keep everything.
 
+## Review
+How long phase review continues.
+- Every phase except the final phase gets at most two reviewer rounds: the initial review and one re-review.
+- Material findings remaining after round two carry into the next phase.
+- The final phase has no review-round limit and must pass with all carried findings resolved.
+
 ## Conventions
 Repo facts. Discovered from repo docs when unset; the agent asks before writing them here.
 - Integration branch: discover

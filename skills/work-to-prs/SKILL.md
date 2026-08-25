@@ -66,12 +66,13 @@ PR boundaries are not planned. Phases land on a working part branch; after each 
 ### Each phase
 
 1. Record phase base: part base SHA for the first phase of a part, prior phase final SHA otherwise.
-2. Spawn fresh implementer with the phase section, assigned part branch, base SHA, artifact folder, and verification commands.
-3. Spawn fresh read-only reviewer with brief acceptance criteria, phase section, base/head range, commits, checks, config rules, and prior reports. Phase review is mandatory.
+2. Spawn fresh implementer with the phase section, assigned part branch, base SHA, artifact folder, verification commands, and any material findings carried from earlier phases. The implementer resolves applicable carried findings before or alongside the phase behavior and records each disposition.
+3. Spawn fresh read-only reviewer with brief acceptance criteria, phase section, base/head range, commits, checks, config rules, prior reports, and carried findings. Phase review is mandatory; `PASS` requires applicable carried findings to be resolved.
 4. On `NEEDS_CHANGES`, resume the same implementer, then use a new reviewer for re-review. Correct by amending/rebasing relevant commits. Add a new commit only for genuinely missing work; never add a generic review-fix commit.
-5. Allow initial review plus three fix/re-review cycles. Remaining findings become `BEST_EFFORT` and the next phase continues. Reviewer identifies fundamental blockers with evidence; orchestrator stops only if the next phase is unsafe or impossible.
-6. Save final SHA, step-end SHAs, checks, verdict, completion note, and unresolved findings in run config.
-7. Spawn fresh grouper in `decide` mode with the open range, phases in it, the next phase section, and any user split. Act on the return:
+5. For every phase except the final phase in the plan, allow one initial review and at most one fix/re-review cycle. If round two still returns `NEEDS_CHANGES`, keep only material findings that affect correctness, security, data integrity, acceptance criteria, or the next phase's architecture. Record them as carry-forward findings and continue; do not spend another review cycle on that phase. A finding that makes subsequent work unsafe or impossible remains a blocker.
+6. The final phase has no review-round limit. Continue implementer/fresh-reviewer cycles until it passes and every material carry-forward finding is resolved. Do not finish the run with review debt.
+7. Save final SHA, step-end SHAs, checks, verdict, completion note, and carry-forward findings in run config. Bind every report and finding to the reviewed SHA.
+8. Spawn fresh grouper in `decide` mode with the open range, phases in it, the next phase section, carry-forward findings, and any user split. Material carry-forward findings force `STACK` so the next phase resolves them before the part closes. Otherwise act on the return:
    - `STACK` — next phase continues on the same part branch.
    - `CUT` — close the part at the phase head.
    - `CUT_AT <sha>` — close the part at that SHA; commits after it start the next part.
@@ -83,11 +84,11 @@ On `CUT` / `CUT_AT`: rename the part branch with the grouper's slug, create the 
 
 ### Handoff, resume, and publication
 
-Report every part's branch, target, head SHA, phases, checks, verdicts, unresolved findings, and artifact paths. End with the exact `work-to-prs publish <run-folder>` command.
+Report every part's branch, target, head SHA, phases, checks, verdicts, carry-forward state, and artifact paths. End with the exact `work-to-prs publish <run-folder>` command.
 
 `resume` validates all saved branch/base/head state, starts a fresh implementer at the incomplete phase on the open part branch, and preserves artifacts. It never guesses state.
 
-`publish` runs only on the explicit command, unless config's Publication timing says per-part. For each closed part bottom-to-top: validate clean state and the exact approved SHA, push the branch, then execute the configured publication behavior (draft PRs, ready PRs, or push only) from saved title/body and target. If the description's Visuals section references local image paths and config names a PR image upload capability, upload each image to the new PR with it, replace the local paths with the returned URLs, and edit the PR body; without the capability, strip the local paths and note the images in the handoff. Do not publish drifted branches or open parts. A `BEST_EFFORT` PR may open only here and must disclose unresolved findings. Fundamentally blocked work must resume first.
+`publish` runs only on the explicit command, unless config's Publication timing says per-part. For each closed part bottom-to-top: validate clean state, the exact approved SHA, and an empty carry-forward list; push the branch, then execute the configured publication behavior (draft PRs, ready PRs, or push only) from saved title/body and target. If the description's Visuals section references local image paths and config names a PR image upload capability, upload each image to the new PR with it, replace the local paths with the returned URLs, and edit the PR body; without the capability, strip the local paths and note the images in the handoff. Do not publish drifted branches, open parts, fundamentally blocked work, or parts with review debt. PR titles and bodies never mention internal review rounds, verdict labels, or carry-forward state.
 
 ## Artifacts
 

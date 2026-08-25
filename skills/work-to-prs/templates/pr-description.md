@@ -13,5 +13,3 @@
 ## References
 
 <!-- Work item link and closing reference when appropriate. -->
-
-<!-- Include known limitations only when a BEST_EFFORT review left unresolved findings. -->

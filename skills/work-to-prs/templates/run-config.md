@@ -30,8 +30,8 @@
 
 ## Phase state
 
-| Phase | Prior SHA | Final SHA | Step-end SHAs | Review verdict | Verification | Completion artifact | Grouping | Unresolved findings |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Phase | Prior SHA | Final SHA | Step-end SHAs | Review rounds | Review verdict | Verification | Completion artifact | Grouping | Carry-forward findings |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Publication state
 
