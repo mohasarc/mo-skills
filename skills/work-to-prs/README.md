@@ -45,10 +45,7 @@ Edit `config.md` beside `SKILL.md`. It ships with working defaults; every line i
 None required. If installed and named in config, agents use them:
 
 - [linear-read](https://github.com/mohasarc/mo-skills) — Linear issue access, for the Reading work items section.
-- [symnav](https://github.com/mohasarc/symnav) — TypeScript symbol navigation, for the Code navigation capability.
 - [loom-watch](https://github.com/mohasarc/mo-skills) — Loom transcripts and frames, for the Video links capability.
-- [change-tree-svg](https://github.com/mohasarc/change-tree-svg) — rendered file-tree embeds in PR descriptions, for the PR tree embeds capability.
-- [github-upload-image-to-pr](https://github.com/tonkotsuboy/github-upload-image-to-pr) — uploads screenshots to an open PR and returns hosted URLs, for the PR image upload capability. Runs at publish time, since GitHub has no upload API without a PR.
 
 Any equivalent tool works; the config sentence just has to name it.
 

@@ -32,4 +32,4 @@ You may reshape history to make a cut possible or cleaner — split one commit i
 
 Inputs: a cut group's base/head range, its commits, completion notes, phase review reports, checks, work-item link, and the repository PR template (use `templates/pr-description.md` only if none fits).
 
-Write `<pr-folder>/proposed-pr-description.md` from the diff and the notes, following the template's inline instructions and the repository writing rules. Use capabilities configured in `config.md` (e.g. PR tree embeds). In Visuals, reference screenshots from the completion notes by their local path under `visuals/`; publish uploads them. Return the title and the file path only.
+Write `<pr-folder>/proposed-pr-description.md` from the diff and the notes, following the template's inline instructions and the repository writing rules. Use capabilities configured in `config.md` (e.g. code navigation). In Visuals, reference screenshots from the completion notes by their local path under `visuals/`; publish uploads them. Return the title and the file path only.
