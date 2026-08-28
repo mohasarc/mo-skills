@@ -225,12 +225,9 @@ uncertainty, so err toward listing one when in doubt.
 
 <!--
 If changes produce visual changes, place before/after screenshots
-here. Never commit image files. Upload them with the
-github-upload-image-to-pr+ skill once the PR exists — it uploads
-through the PR comment box and returns persistent
-user-attachments URLs; use those URLs here. Before a PR exists,
-keep the images uncommitted and reference them by local path so
-the upload step can find them. Skip the section if nothing is
-visual.
-
+here. Never commit image files. Reference each by its local path
+under the artifact folder's visuals/. Publish passes each path to
+`gh pr create --attach` / `gh pr edit --attach`, which uploads the
+file and rewrites the local-path reference to the hosted URL. Skip
+the section if nothing is visual.
 -->

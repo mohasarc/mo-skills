@@ -27,7 +27,7 @@ Never infer `publish` from an implementation request. Before doing anything, `pu
 
 ## Capabilities
 
-Input access and optional tooling come from the project, not this skill. Use what `config.md` names: tracker access (project skill, MCP, or CLI), code navigation, video links, PR image upload. If input references a tracker and no access method is configured or discoverable, stop with a clear report. Treat the tracker as read-only unless config says otherwise.
+Input access and optional tooling come from the project, not this skill. Use what `config.md` names: tracker access (project skill, MCP, or CLI), code navigation, video links. If input references a tracker and no access method is configured or discoverable, stop with a clear report. Treat the tracker as read-only unless config says otherwise.
 
 ## Agents
 
@@ -88,7 +88,7 @@ Report every part's branch, target, head SHA, phases, checks, verdicts, carry-fo
 
 `resume` validates all saved branch/base/head state, starts a fresh implementer at the incomplete phase on the open part branch, and preserves artifacts. It never guesses state.
 
-`publish` runs only on the explicit command, unless config's Publication timing says per-part. For each closed part bottom-to-top: validate clean state, the exact approved SHA, and an empty carry-forward list; push the branch, then execute the configured publication behavior (draft PRs, ready PRs, or push only) from saved title/body and target. If the description's Visuals section references local image paths and config names a PR image upload capability, upload each image to the new PR with it, replace the local paths with the returned URLs, and edit the PR body; without the capability, strip the local paths and note the images in the handoff. Do not publish drifted branches, open parts, fundamentally blocked work, or parts with review debt.
+`publish` runs only on the explicit command, unless config's Publication timing says per-part. For each closed part bottom-to-top: validate clean state, the exact approved SHA, and an empty carry-forward list; push the branch, then execute the configured publication behavior (draft PRs, ready PRs, or push only) from saved title/body and target. If the description's Visuals section references local image paths, pass each to `gh pr create` / `gh pr edit` via `--attach`, which uploads the file and rewrites the local-path reference to the hosted URL; if the installed gh lacks `--attach`, replace each reference with a placeholder naming the image and its slot (e.g. `<!-- upload visuals/phase-02-checkout.png here -->`), and tell the human in the handoff to replace the placeholders by uploading the files from that part's `visuals/` folder. Do not publish drifted branches, open parts, fundamentally blocked work, or parts with review debt.
 
 ## Artifacts
 
@@ -106,4 +106,4 @@ runs/<run>/
     visuals/<phase-nn>-<name>.png
 ```
 
-`grouping-<nn>.md` holds the grouper's `decide` return after phase `<nn>`. `visuals/` holds uncommitted screenshots referenced by local path until publish uploads them. Retention follows config's Runs section; default keep everything. Completion notes use the repository's completion template verbatim when one exists, otherwise `templates/phase-completion.md` verbatim.
+`grouping-<nn>.md` holds the grouper's `decide` return after phase `<nn>`. `visuals/` holds uncommitted screenshots referenced by local path until publish attaches them. Retention follows config's Runs section; default keep everything. Completion notes use the repository's completion template verbatim when one exists, otherwise `templates/phase-completion.md` verbatim.
