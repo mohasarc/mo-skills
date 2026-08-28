@@ -38,7 +38,6 @@ Repo facts. Discovered from repo docs when unset; the agent asks before writing 
 Tools agents may use when configured.
 - Code navigation: none
 - Video links: none
-- PR tree embeds: none
 - PR image upload: none
 
 ## Extra guidance

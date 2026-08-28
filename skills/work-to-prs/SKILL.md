@@ -27,7 +27,7 @@ Never infer `publish` from an implementation request. Before doing anything, `pu
 
 ## Capabilities
 
-Input access and optional tooling come from the project, not this skill. Use what `config.md` names: tracker access (project skill, MCP, or CLI), code navigation, video links, PR tree embeds, PR image upload. If input references a tracker and no access method is configured or discoverable, stop with a clear report. Treat the tracker as read-only unless config says otherwise.
+Input access and optional tooling come from the project, not this skill. Use what `config.md` names: tracker access (project skill, MCP, or CLI), code navigation, video links, PR image upload. If input references a tracker and no access method is configured or discoverable, stop with a clear report. Treat the tracker as read-only unless config says otherwise.
 
 ## Agents
 

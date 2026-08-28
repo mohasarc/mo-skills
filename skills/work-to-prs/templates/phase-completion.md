@@ -116,60 +116,22 @@ move files, or introduce a new ownership boundary.
 Skip for single-file fixes, obvious small renames, docs-only edits,
 or when paths add no review signal.
 
-Form: embedded Change Tree SVG first, then the bare Change Tree in
-a collapsed details fallback. Do not leave the bare tree as the
-primary content.
-
-Author the Change Tree as a Unicode filesystem tree anchored at repo
-root. Use `.` as the root. Include unchanged parent directories as
-context; annotate only nodes that matter for ownership or review.
+Form: a Change Tree — a Unicode filesystem tree in a ```text block,
+anchored at repo root. Use `.` as the root. Include unchanged parent
+directories as context; annotate only nodes that matter for
+ownership or review.
 
 Legend: `++` added, `**` changed, `~~` moved, `--` removed.
 
-Generate the embed with the CLI only:
-
-  npx change-tree-svg embed -f tree.txt
-
-Copy/paste the command's generated `<pre>...</pre>` output exactly as
-the first content in this section. Do not write, edit, upload, or
-assemble SVG/image/embed markup by hand.
-
-Then add the same tree as a fallback:
-
-  <details>
-  <summary>Text fallback</summary>
-
-  ```text
-  .
-  ├── apps/
-  │   └── cli/
-  │       └── src/
-  │           └── ** register-context-command.ts # wires history flag
-  └── packages/
-      └── backend-typescript/
-          └── src/
-              ├── ++ reference-search/
-              │   └── ++ ... 12 files           # owns TS ref lookup
-              └── ~~ git/
-                  └── ~~ ... 3 files            # moved from apps/cli/src/history/
-  ```
-
-  </details>
-
-Raw Change Tree example:
+Example (illustrative paths):
 
   .
-  ├── apps/
-  │   └── cli/
-  │       └── src/
-  │           └── ** register-context-command.ts # wires history flag
-  └── packages/
-      └── backend-typescript/
-          └── src/
-              ├── ++ reference-search/
-              │   └── ++ ... 12 files           # owns TS ref lookup
-              └── ~~ git/
-                  └── ~~ ... 3 files            # moved from apps/cli/src/history/
+  └── src/
+      ├── ** payment-form.ts             # wires retry flag
+      ├── ++ invoice-retry/
+      │   └── ++ ... 12 files            # owns retry scheduling
+      └── ~~ receipts/
+          └── ~~ ... 3 files             # moved from src/billing/
 
 Rules:
   - Show important changed areas, not every touched file.
@@ -184,7 +146,6 @@ Rules:
     the same ownership.
   - Inline `# ...` comments should name purpose or ownership. Do not
     restate marker status except the required moved-from note.
-  - The fallback tree must match the rendered Change Tree.
 -->
 
 ## Public surface
