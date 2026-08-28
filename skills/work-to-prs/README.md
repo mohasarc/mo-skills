@@ -45,7 +45,6 @@ Edit `config.md` beside `SKILL.md`. It ships with working defaults; every line i
 None required. If installed and named in config, agents use them:
 
 - [linear-read](https://github.com/mohasarc/mo-skills) — Linear issue access, for the Reading work items section.
-- [symnav](https://github.com/mohasarc/symnav) — TypeScript symbol navigation, for the Code navigation capability.
 - [loom-watch](https://github.com/mohasarc/mo-skills) — Loom transcripts and frames, for the Video links capability.
 
 Any equivalent tool works; the config sentence just has to name it.
