@@ -157,8 +157,9 @@ wrong interface in seconds.
 
 Skip the section if the PR adds or changes no public surface.
 
-Form: TypeScript signatures, no bodies. Group by added / changed /
-removed if more than one category is present.
+Form: signatures in the project's language, no bodies. Group by
+added / changed / removed if more than one category is present.
+Example (illustrative TypeScript):
 
   Added:
     class WorkspaceIgnore {
