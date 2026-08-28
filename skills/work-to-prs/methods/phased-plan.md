@@ -10,7 +10,16 @@ This document focuses on:
 
 1. **High-quality, readable, testable code.** Plan the implementation to favor reuse, simplicity, and verifiability.
 2. **TDD ordering.** Every phase begins by fleshing out test cases before any production code. Code follows tests, not the other way around.
-3. **One concern per phase.** A phase passes the same test as a commit: if its name needs "and" to describe what it delivers, split it. Phases are the unit later grouped into PRs; a phase that bundles concerns cannot be regrouped without rewriting history.
+3. **One concern per phase — a concern is a behavior, not a layer.** A phase delivers one behavior observable where the work is consumed, every layer included. Two behaviors joined by "and" are two phases; one behavior spanning layers is one. Phases are later grouped into PRs; a phase that bundles concerns can't be regrouped without rewriting history.
+
+## Slicing
+
+Slice vertically: a phase named after a structural part is horizontal; one named after an observable behavior change is vertical.
+
+- Infrastructure rides in the first slice that consumes it; a standalone infrastructure phase needs justification that no slice can carry it.
+- First slice is the minimal end-to-end happy path; later slices deepen it. Test cases spanning distinct behaviors signal a split.
+- Order by dependency; among independent slices, most uncertain integration first.
+- Work with no observable behavior of its own — refactor, migration — slices by risk or subsystem; record the classification.
 
 The plan does not decide commits or PRs. The implementer turns steps into commits under the repository's commit rules; PR boundaries are decided after phases land, from the real diff.
 
@@ -56,7 +65,7 @@ Every phase entry uses this shape:
 ```
 ## Phase N — <name>
 
-**Behavior delivered.** What works after this phase that didn't work before, in user/caller-observable terms.
+**Behavior delivered.** What works after this phase that didn't work before, observable where the work is consumed.
 
 **Test cases.** The tests that drive this phase, written *first*. For each test:
 - What is being tested (the scenario or contract).
@@ -80,7 +89,7 @@ Do **not** include function bodies, control flow, or algorithm implementations. 
 
 1. **TDD ordering is structural, not just prose.** Every phase's *Test cases* subsection precedes its *Components* subsection. Every step starts from its failing tests.
 2. **Phases are self-contained.** At the end of each phase the codebase is consistent and tests pass. No "this finishes in the next phase" arrangements.
-3. **One concern per phase.** If a phase's name or behavior needs "and," split it.
+3. **One concern per phase.** A concern is one observable behavior, never a layer. If a phase's name joins two behaviors with "and," split it.
 4. **Steps end green.** Every step leaves tests passing so any step boundary is a safe place to end a PR.
 5. **Abstractions, not implementations.** The plan shows the shape of what to build — types, interfaces, signatures, declarative values — in the project's actual language and conventions. It does not contain function bodies, control flow, or algorithm implementations. Implementation happens during execution; the plan exists to direct that execution, not to do it.
 6. **Reuse before invention.** Prefer existing patterns and modules in the codebase. Justify new abstractions when introducing them.
