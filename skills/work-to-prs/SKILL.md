@@ -2,7 +2,7 @@
 name: work-to-prs
 description: Take any work item — tracker issue, URL, or plain text — through private two-agent planning, phased TDD implementation, strict per-phase review, diff-driven PR grouping, local PR artifacts, and explicit configurable publication. Use when the user wants a work item implemented end to end, wants PR proposals prepared, or asks to resume or publish from this workflow.
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
 ---
 
 # Work to PRs

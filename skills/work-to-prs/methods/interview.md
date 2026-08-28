@@ -16,6 +16,7 @@ Adapt to the work at hand; not every area applies to every task. Cover whichever
 
 - **The work itself** — its scope. What's in, what's out, what edge cases matter, what success looks like.
 - **The site of change** — which files, modules, packages, or layers it touches. Where it plugs into existing structure.
+- **The consumption boundary** — where the work's behavior is observed, and which distinct end-to-end behaviors it delivers; these become candidate phases.
 - **Existing collaborators** — types, interfaces, functions, data structures, services this work integrates with. What's reused vs. changed vs. added.
 - **The shape of new things** — what new types, interfaces, or modules are needed and how they relate to what's already there.
 - **Behavior and contracts** — error paths, edge cases, ordering guarantees, idempotency, concurrency, anything non-obvious about how the thing should behave.
