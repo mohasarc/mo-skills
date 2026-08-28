@@ -19,7 +19,7 @@ This workflow owns its implementation and review rules. Its methods are bundled 
 | `work-to-prs resume <run-folder>` | Validate durable state and continue incomplete work. |
 | `work-to-prs publish <run-folder>` | Execute the publication behavior set in `config.md`. |
 
-Never infer `publish` from an implementation request. Before doing anything, `publish` prints one line stating exactly what it is about to do (e.g. "opening 2 draft PRs targeting development").
+Never infer `publish` from an implementation request. Before doing anything, `publish` prints one line stating exactly what it is about to do (e.g. "opening 2 draft PRs targeting main").
 
 ## Config
 
@@ -47,7 +47,7 @@ Roles: planner (+ companion), implementer, reviewer, grouper. Each spawn is fres
 
 ### Preflight and planning
 
-1. Read `config.md`. Classify input: configured tracker reference, or free text used as the work description. Read repository instructions for unset conventions: integration branch, branch convention, PR templates, verification commands. Use the documented integration branch or `development`, then `main`.
+1. Read `config.md`. Classify input: configured tracker reference, or free text used as the work description. Read repository instructions for unset conventions: integration branch, branch convention, PR templates, verification commands. Use the configured or documented integration branch; otherwise the repository default branch (`origin/HEAD`).
 2. Confirm working tree has no user-owned changes. Update base only as repository rules allow and record base SHA. Do not update it mid-run.
 3. Spawn planner with `planner.md`; planner alone spawns companion with `companion.md`. Orchestrator never receives their messages.
 4. Planner writes `runs/<run>/brief.md`, `phased-plan.md`, and `planning-dialogue.md`. It returns only plan path, phase count, and material assumptions.

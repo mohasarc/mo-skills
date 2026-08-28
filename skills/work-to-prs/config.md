@@ -30,7 +30,7 @@ How long phase review continues.
 
 ## Conventions
 Repo facts. Discovered from repo docs when unset; the agent asks before writing them here.
-- Integration branch: discover
+- Integration branch: discover (repo docs, else repository default branch)
 - Branch naming: discover
 - Verification commands: discover
 
