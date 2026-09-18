@@ -1,6 +1,6 @@
 ---
 name: address-review
-description: Address PR review comments by triaging each into apply/reject/clarify, gating a plan with the human, then landing one focused commit per change with links back to the originating comments. Never comments on GitHub. Never auto-pushes. Triggers include "address PR comments", "address review feedback", "respond to PR review", "apply review comments", "go through PR comments", "work through review feedback".
+description: Address PR review comments by triaging each into apply/reject/clarify, gating a plan with the human, then landing the fixes: folded into the originating commits on a draft or self-reviewed PR, or as one focused commit per change with links back to the originating comments. Never comments on GitHub. Never auto-pushes. Triggers include "address PR comments", "address review feedback", "respond to PR review", "apply review comments", "go through PR comments", "work through review feedback".
 ---
 
 # address-review
