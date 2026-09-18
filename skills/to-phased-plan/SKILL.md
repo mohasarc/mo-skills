@@ -12,7 +12,7 @@ The unit of work is whatever discrete chunk needs implementing — a feature, a 
 This document focuses on:
 
 1. **High-quality, readable, testable code.** Plan the implementation to favor reuse, simplicity, and verifiability.
-2. **TDD ordering.** Every phase begins by fleshing out test cases before any production code. Code follows tests, not the other way around.
+2. **TDD ordering for behavior.** A phase that adds, changes, or removes behavior begins with test cases before production code. A routine phase (wiring, option threading, re-exports, type plumbing) lists none; code commit first, test-update commit after if existing tests need it.
 3. **Minimal, reviewable commits.** Each commit does **one thing** and is easy to review on its own. A commit may span a whole phase, a single step within a phase, or a handful of steps — whatever keeps it minimal.
 4. **One concern per phase — a concern is a behavior, not a layer.** A phase delivers one behavior observable where the work is consumed, every layer included. Two behaviors joined by "and" are two phases; one behavior spanning layers is one.
 
@@ -105,7 +105,7 @@ Do **not** include function bodies, control flow, or algorithm implementations. 
 
 ## Hard rules
 
-1. **TDD ordering is structural, not just prose.** Every phase's *Test cases* subsection precedes its *Components* subsection. Every commit plan begins with at least one commit that adds (failing) tests before any commit that adds production code.
+1. **TDD ordering is structural, not just prose.** In a behavior phase the *Test cases* subsection precedes *Components* and the commit plan starts with a failing-test commit. A routine phase has no *Test cases* subsection and no red commit.
 2. **Phases are self-contained.** At the end of each phase the codebase is consistent and tests pass. No "this finishes in the next phase" arrangements.
 3. **Commits obey the hygiene rules above.** If a commit's description needs an "and," split it.
 4. **One concern per phase.** A concern is one observable behavior, never a layer. If a phase's name joins two behaviors with "and," split it.
