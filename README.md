@@ -12,6 +12,7 @@ Fuzzy idea → spec → stages → phased plan → PR → reviewed merge.
 |---|---|---|
 | `document-feature` | Need top-down feature documentation | Investigates an implementation and writes architecture docs with Mermaid diagrams. |
 | `trace-code-flow` | Need to follow a code path | Produces a compact pseudo-code gist of the real execution flow. |
+| `describe-work` | Need to understand or review completed or proposed work | Explains intent, consequential changes, design choices, and evidence using reasoning techniques suited to the change and reader. |
 
 ---
 
