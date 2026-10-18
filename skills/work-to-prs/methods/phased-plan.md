@@ -9,7 +9,7 @@ The unit of work is whatever discrete chunk needs implementing — a feature, a 
 This document focuses on:
 
 1. **High-quality, readable, testable code.** Plan the implementation to favor reuse, simplicity, and verifiability.
-2. **TDD ordering.** Every phase begins by fleshing out test cases before any production code. Code follows tests, not the other way around.
+2. **TDD ordering for behavior.** A phase that adds, changes, or removes behavior begins with test cases before production code. A routine phase (wiring, option threading, re-exports, type plumbing) lists none; code commit first, test-update commit after if existing tests need it.
 3. **One concern per phase — a concern is a behavior, not a layer.** A phase delivers one behavior observable where the work is consumed, every layer included. Two behaviors joined by "and" are two phases; one behavior spanning layers is one. Phases are later grouped into PRs; a phase that bundles concerns can't be regrouped without rewriting history.
 
 ## Slicing
@@ -87,7 +87,7 @@ Do **not** include function bodies, control flow, or algorithm implementations. 
 
 ## Hard rules
 
-1. **TDD ordering is structural, not just prose.** Every phase's *Test cases* subsection precedes its *Components* subsection. Every step starts from its failing tests.
+1. **TDD ordering is structural, not just prose.** In a behavior phase the *Test cases* subsection precedes *Components* and every step starts from its failing tests. A routine phase has no *Test cases* subsection and no red commit.
 2. **Phases are self-contained.** At the end of each phase the codebase is consistent and tests pass. No "this finishes in the next phase" arrangements.
 3. **One concern per phase.** A concern is one observable behavior, never a layer. If a phase's name joins two behaviors with "and," split it.
 4. **Steps end green.** Every step leaves tests passing so any step boundary is a safe place to end a PR.

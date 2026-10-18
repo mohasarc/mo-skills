@@ -1,6 +1,6 @@
 ---
 name: address-review
-description: Address PR review comments by triaging each into apply/reject/clarify, gating a plan with the human, then landing one focused commit per change with links back to the originating comments. Never comments on GitHub. Never auto-pushes. Triggers include "address PR comments", "address review feedback", "respond to PR review", "apply review comments", "go through PR comments", "work through review feedback".
+description: Address PR review comments by triaging each into apply/reject/clarify, gating a plan with the human, then landing the fixes: folded into the originating commits on a draft or self-reviewed PR, or as one focused commit per change with links back to the originating comments. Never comments on GitHub. Never auto-pushes. Triggers include "address PR comments", "address review feedback", "respond to PR review", "apply review comments", "go through PR comments", "work through review feedback".
 ---
 
 # address-review
@@ -45,10 +45,11 @@ Before anything else, validate the working state:
    git status --short
    ```
 
-   Any output → refuse. Print `git status --short`. Tell the human to commit / stash / discard themselves. Do **not** auto-stash.
+   Any tracked change (`M`, `A`, `D`, `R`) → refuse. Print `git status --short`. Tell the human to commit / stash / discard themselves. Do **not** auto-stash. Untracked-only (`??`) output is fine; proceed.
 
 3. **Get on the right branch.**
-   - If current branch != `headRefName`, run `git checkout <headRefName>`.
+   - If `git worktree list` shows `headRefName` checked out in another worktree, run every following step from that worktree instead of checking out.
+   - Otherwise, if current branch != `headRefName`, run `git checkout <headRefName>`.
    - `git fetch origin <headRefName>`
    - Compare local to `origin/<headRefName>`:
      - Strictly behind → fast-forward (`git merge --ff-only origin/<headRefName>`).
@@ -253,6 +254,15 @@ Only after explicit approval does Phase 6 begin.
 ---
 
 ## Phase 6 — Implementation loop
+
+### Pick the delivery mode first
+
+- **Rewrite mode** (default for a draft PR, or when the feedback is a self-review with no external reviewer threads): fold each fix into the commit that introduced the line, via rebase. Tag the pre-rewrite head first (`pre-review-<PR#>`). Drop fix-up commits into their origin, drop cosmetic commits the review rejects, reorder so every commit builds. No `feedback:` commits. Push needs `--force-with-lease`.
+- **Feedback-commit mode** (external reviewer threads on a non-draft PR): the loop below, one `feedback:` commit per item.
+
+In rewrite mode, run the per-commit checks at every rewritten commit, not only at HEAD.
+
+### Loop (feedback-commit mode)
 
 For each Apply item, in order:
 
