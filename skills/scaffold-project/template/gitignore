@@ -1,0 +1,9 @@
+# Shared agent skills are copied from mo-skills; project-specific ones end in + and are committed
+.agents/skills/*
+!.agents/skills/*+/
+.claude/settings.local.json
+.claude/worktrees/
+.env
+.env.*
+!.env.example
+.DS_Store

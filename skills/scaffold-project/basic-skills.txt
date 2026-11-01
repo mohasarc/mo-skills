@@ -1,0 +1,9 @@
+grill-me
+to-functional-spec
+to-stages
+drill-down
+to-phased-plan
+to-implementation
+verify-with-tests
+describe-work
+architecture-review
