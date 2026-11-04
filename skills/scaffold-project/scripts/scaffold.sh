@@ -65,7 +65,7 @@ link_if_missing ../.agents/rules "$TARGET/.claude/rules"
 copy_if_missing "$TEMPLATE/codex/hooks.json" "$TARGET/.codex/hooks.json"
 copy_if_missing "$TEMPLATE/codex/hooks/load_agent_rules.js" "$TARGET/.codex/hooks/load_agent_rules.js"
 
-for rule in commits coding-style no-ai-mentions how-we-work pr-descriptions; do
+for rule in commits coding-style no-ai-mentions how-we-work pr-descriptions agent-feedback; do
   copy_if_missing "$TEMPLATE/rules/$rule.md" "$TARGET/.agents/rules/$rule.md"
 done
 [ "$TYPESCRIPT" = 0 ] || copy_if_missing "$TEMPLATE/rules/symnav.md" "$TARGET/.agents/rules/symnav.md"

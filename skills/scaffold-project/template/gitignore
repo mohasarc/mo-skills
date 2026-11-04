@@ -8,3 +8,4 @@
 !.env.example
 .DS_Store
 plans/
+.agents/feedback.md
