@@ -37,3 +37,8 @@ How to structure and write commits. When the repository ships its own commit rul
 - Title-only by default, keep messages concise. Add a body only when the change is weird, confusing, or unusual — then state why it was done. Everything else (general rationale, root cause narrative) belongs in the PR description
 - Be specific and plain — name real symbols: "Rename getUserData to fetchUserProfile", not "Rename function" or invented vocabulary
 - Review-fix commits: title plus link to the GitHub comment as body
+
+## Branching
+
+- Never commit on `main`. Branch from pulled `main` first
+- One fix per branch/PR
