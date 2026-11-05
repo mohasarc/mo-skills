@@ -5,7 +5,7 @@ description: Slice a phased or staged plan into a stack of PRs so the human can 
 
 # Stacking PRs from a phased plan
 
-Phases and stages are *planning units*; PRs are *review units*. They don't have to be 1:1, but they often should be. This skill is the judgment layer for slicing a plan into a stack of PRs that the human can review and merge in parallel while later PRs are still being written. For `gt` command mechanics, defer to the `graphite` skill.
+Phases and stages are *planning units*; PRs are *review units*. They don't have to be 1:1, but they often should be. This skill is the judgment layer for slicing a plan into a stack of PRs that the human can review and merge in parallel while later PRs are still being written. For command mechanics, defer to the stacking tool's docs.
 
 ## Why stack
 
