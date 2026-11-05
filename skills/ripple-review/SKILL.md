@@ -140,10 +140,10 @@ Do not write the file in this case.
 
 Stack discovery is two-tiered:
 
-1. **Graphite first.** If `gt` is available and the source branch is tracked:
+1. **`gh stack` first.** If the source branch is in a local stack:
 
    ```bash
-   gt log --stack         # or: gt children, depending on gt version
+   gh stack view --json
    ```
 
    Identify all descendant branches (the source's children, grandchildren, …, to the tip). For each, resolve to an open or draft PR via:
@@ -152,7 +152,7 @@ Stack discovery is two-tiered:
    gh pr list --head <branch> --json number,state,isDraft,headRefName
    ```
 
-2. **Base-branch fallback.** If `gt` is unavailable, untracked for the source branch, or returns nothing useful:
+2. **Base-branch fallback.** If `gh stack` is unavailable, the source branch isn't in a stack, or it returns nothing useful:
 
    ```bash
    # Recursively find PRs whose base is the source PR's head
