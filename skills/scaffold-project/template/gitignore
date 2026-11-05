@@ -9,3 +9,4 @@
 .DS_Store
 plans/
 .agents/feedback.md
+.agents/scaffold-manifest
