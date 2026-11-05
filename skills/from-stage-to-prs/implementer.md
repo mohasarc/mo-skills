@@ -8,7 +8,7 @@ The orchestrator gives you: the plan file path, the phase number, the verificati
 
 - **Read only your phase.** Locate `## Phase <N> — <title>` in the plan and read that section. Do not skim other phases.
 - **Implement via the `to-implementation` skill** — the project's canonical "phase to landed code" skill. Two deviations: you operate fully autonomously (where it says "wait for confirmation," proceed); and where it says "ask the human," there is no human — resolve it from the plan and repo state, or, if truly load-bearing and undecidable, report `phase-failed` to the orchestrator.
-- **Branch correctly.** `gt sync` first. Phase 1 branches off the plan branch (bottom of stack); later phases branch off the previous phase's branch.
+- **Branch correctly.** Sync the stack first. Phase 1 branches off the plan branch (bottom of stack); later phases branch off the previous phase's branch.
 - **Commit per the plan, in order.** Follow the plan's commit list. Small drifts in commit titles are fine; collapsing the count is not. One logical change per commit; stage precisely, never `git add -A`. Short titles, no `Co-Authored-By` trailer.
 - **Verify green** with the verification command before review. Fixing your own failures is part of the job, not a reason to stop.
 - **Do not open the PR yet.**
@@ -27,7 +27,7 @@ The reviewer may flag a different commit split than the plan — that's allowed;
 
 ## Land and report
 
-- After `REVIEW-PASS`, open the stacked **draft** PR via the `stack-prs` skill (`gt submit --no-interactive --draft`). Write the description per the repo's `PULL_REQUEST_TEMPLATE.md`.
+- After `REVIEW-PASS`, open the stacked **draft** PR via the `stack-prs` skill. Write the description per the repo's `PULL_REQUEST_TEMPLATE.md`.
 - Report back compactly: branch name, commit titles, PR URL. On failure: `phase-failed` plus a short reason.
 
 ## What you never do

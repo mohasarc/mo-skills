@@ -1,11 +1,11 @@
 ---
 name: stack-prs
-description: Slice a phased or staged plan into a stack of PRs so the human can review and merge them in parallel as later PRs land. Use when the user asks to open a PR for a phase/stage, when finishing a phase from to-implementation, or when deciding "should this be one PR or several?" — even if they don't say "stack" or "graphite" explicitly. Triggers include "PR this phase", "submit this stack", "stack these phases", "open a PR for this work", "should we bundle these into one PR".
+description: Slice a phased or staged plan into a stack of PRs so the human can review and merge them in parallel as later PRs land. Use when the user asks to open a PR for a phase/stage, when finishing a phase from to-implementation, or when deciding "should this be one PR or several?" — even if they don't say "stack" explicitly. Triggers include "PR this phase", "submit this stack", "stack these phases", "open a PR for this work", "should we bundle these into one PR".
 ---
 
 # Stacking PRs from a phased plan
 
-Phases and stages are *planning units*; PRs are *review units*. They don't have to be 1:1, but they often should be. This skill is the judgment layer for slicing a plan into a stack of PRs that the human can review and merge in parallel while later PRs are still being written. For `gt` command mechanics, defer to the `graphite` skill.
+Phases and stages are *planning units*; PRs are *review units*. They don't have to be 1:1, but they often should be. This skill is the judgment layer for slicing a plan into a stack of PRs that the human can review and merge in parallel while later PRs are still being written. For command mechanics, defer to the stacking tool's docs.
 
 ## Why stack
 
@@ -36,23 +36,23 @@ When grouping phases:
 
 ## Workflow
 
-For commands, see the `graphite` skill. The shape:
+Use the stacking tool the repo's rules name, and its docs for commands. No tool named: use `stack-prs-manual`. The shape:
 
 1. First PR branches off `main`. Subsequent PRs branch off the current top of stack — that's what makes it a stack.
-2. Submit after each phase finishes green (`gt submit --no-interactive --draft`). Submitting per-phase is what unlocks parallel review.
-3. Sync (`gt sync`) at the **start** of every session, before making any commits — and again after a PR merges to `main`. Graphite auto-rebases your stack on the remote whenever a downstack PR merges, so yesterday's local may already be stale. If you build commits on a stale base and *then* run `gt sync`, sync favors the up-to-date remote and silently drops your unpushed local work.
-4. If you've already committed and only then notice the remote diverged: skip `gt sync`. Fetch and rebase manually — `git fetch origin <branch> && git rebase origin/<branch>` — then `gt submit`.
+2. Submit after each phase finishes green, as a draft. Submitting per-phase is what unlocks parallel review.
+3. Sync the stack at the **start** of every session, before making any commits — and again after a PR merges to `main`. A downstack merge can rebase the stack on the remote, so yesterday's local may already be stale. If you build commits on a stale base and *then* sync, the sync can favor the remote and drop your unpushed local work.
+4. If you've already committed and only then notice the remote diverged: don't sync. Fetch and rebase manually — `git fetch origin <branch> && git rebase origin/<branch>` — then submit.
 5. If the stack gets ~4–5 unmerged PRs deep, pause and check whether the human wants the bottom landed first.
 
-## The `gt` vs `gh` discipline
+## PR discipline
 
-- **Always open PRs as drafts.** Pass `--draft` to `gt submit` (so: `gt submit --no-interactive --draft`). The human marks the PR ready for review themselves when they decide it's ready — never auto-publish a non-draft PR.
-- **Never use `gh pr create`.** It bypasses Graphite and breaks the stack by setting the wrong base branch. PRs are always created and pushed via `gt submit --no-interactive --draft`.
-- **Use `gh` only for PR descriptions.** After `gt submit` creates a PR, use `gh pr edit` to set the title and body — `gt` doesn't manage those. (See the graphite skill for the `--body-file` pattern that avoids heredoc escaping issues.)
+- **Always open PRs as drafts.** The human marks the PR ready for review themselves when they decide it's ready — never auto-publish a non-draft PR.
+- **Create and push PRs through the stacking tool.** Going around it can set the wrong base branch and break the stack.
+- **Set titles and bodies with `gh pr edit`** when the tool doesn't manage them. `--body-file` avoids heredoc escaping issues.
 
 ## Writing the PR description
 
-The repo's `.github/PULL_REQUEST_TEMPLATE.md` defines three sections: **Summary**, **Why**, **QA**. Fill all three; don't add others — Graphite auto-posts the stack tracking, so the body focuses only on this PR's own context.
+The repo's `.github/PULL_REQUEST_TEMPLATE.md` defines three sections: **Summary**, **Why**, **QA**. Fill all three; don't add others. The body focuses only on this PR's own context.
 
 **Pyramid structure — every section, every paragraph.** Lead with the conclusion; let detail follow. The first sentence of each section is the TL;DR — what a reviewer holds if they stop reading there. Each subsequent line sharpens resolution on what was already said; nothing important arrives late. The same shape across sections: Summary alone gives the picture, +Why explains motivation, +QA confirms verification. A reviewer who stops at any point holds a complete (if lower-resolution) understanding proportional to where they stopped.
 

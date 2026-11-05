@@ -27,14 +27,14 @@ Commit hygiene rules (`to-implementation` already enforces these):
 
 ## Land as a stacked PR
 
-After the phase's commits are made and verification is green, use the **`stack-prs` skill** (which uses the **`graphite` skill**) to push this phase as a stacked PR:
+After the phase's commits are made and verification is green, use the **`stack-prs` skill** to push this phase as a stacked PR:
 
 - First phase branches off `main`; later phases branch off the previous phase's branch.
 - Branch name: `<plan-basename>/phase-<N>-<short-slug>`.
-- Submit as a draft: `gt submit --no-interactive --draft`. The human marks it ready for review.
+- Submit as a draft. The human marks it ready for review.
 - Set PR title and body via `gh pr edit --body-file` per the `stack-prs` conventions.
 
-If `gt` reports an untracked-branch or stale-stack error, follow the recovery patterns in the `graphite` skill before retrying. Don't paper over with `--force`.
+If the stacking tool reports an untracked-branch or stale-stack error, follow its documented recovery before retrying. Don't paper over with `--force`.
 
 ## Verify
 
@@ -90,7 +90,7 @@ When the phase is committed, green, and PR'd:
 2. Print a one-line summary to stdout (e.g., `Phase N complete: <branch> @ <PR url>`).
 3. Exit cleanly with status 0.
 
-If you hit a hard stop you cannot resolve (e.g., `gt submit` fails for an unrecoverable reason and you've exhausted the documented recovery in the `graphite` skill), exit with non-zero status. The orchestrator treats the attempt as failed.
+If you hit a hard stop you cannot resolve (e.g., submitting fails for an unrecoverable reason and you've exhausted the tool's documented recovery), exit with non-zero status. The orchestrator treats the attempt as failed.
 
 You do **not** write `state.json`. The orchestrator owns it.
 

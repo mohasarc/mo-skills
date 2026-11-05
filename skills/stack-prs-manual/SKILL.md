@@ -1,6 +1,6 @@
 ---
 name: stack-prs-manual
-description: Use when working with stacked PRs by hand (no Graphite, no GitHub stacking app) — branches whose PRs target another open PR's branch instead of `development`. Triggers: branching off an in-review branch, asking to stack/restack/propagate/retarget, pushing commits to a branch with open downstream PRs, asking for stack status. Skip for ordinary single-PR work whose base is `development`.
+description: Use when working with stacked PRs by hand (no stacking tool) — branches whose PRs target another open PR's branch instead of `development`. Triggers: branching off an in-review branch, asking to stack/restack/propagate/retarget, pushing commits to a branch with open downstream PRs, asking for stack status. Skip for ordinary single-PR work whose base is `development`.
 ---
 
 # stack-prs-manual

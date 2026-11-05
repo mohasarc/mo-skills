@@ -140,19 +140,13 @@ Do not write the file in this case.
 
 Stack discovery is two-tiered:
 
-1. **Graphite first.** If `gt` is available and the source branch is tracked:
-
-   ```bash
-   gt log --stack         # or: gt children, depending on gt version
-   ```
-
-   Identify all descendant branches (the source's children, grandchildren, …, to the tip). For each, resolve to an open or draft PR via:
+1. **Stacking tool first.** If the repo's rules name a stacking tool and the source branch is in a stack, list the stack with it. Identify all descendant branches (the source's children, grandchildren, …, to the tip). For each, resolve to an open or draft PR via:
 
    ```bash
    gh pr list --head <branch> --json number,state,isDraft,headRefName
    ```
 
-2. **Base-branch fallback.** If `gt` is unavailable, untracked for the source branch, or returns nothing useful:
+2. **Base-branch fallback.** If there's no tool, the source branch isn't in a stack, or it returns nothing useful:
 
    ```bash
    # Recursively find PRs whose base is the source PR's head
@@ -265,7 +259,7 @@ If any sub-agent errored, list its errors verbatim under its PR line. Do not ret
 | Source PR doesn't exist                                | Surface `gh`'s error verbatim; exit.                                    |
 | Source PR has no reviewable comments after filtering   | Exit cleanly with "nothing to ripple". Do not write the file.           |
 | No downstream PRs found via either discovery method    | Exit cleanly with "no downstream PRs".                                  |
-| `gt` not installed                                     | Fall through to base-branch discovery silently.                         |
+| No stacking tool available                             | Fall through to base-branch discovery silently.                         |
 | `gh` not installed / unauthenticated                   | Surface `gh`'s error; tell user to run `gh auth login`.                 |
 | Run directory already exists from prior run            | Overwrite `ripple-source.md`. Do not delete other files in the dir.     |
 | Human edited `ripple-source.md` to remove all findings | After `go`, re-read file; if zero findings, exit cleanly.               |
