@@ -33,7 +33,7 @@ Rough guide:
 
 | Project needs | Extras |
 |---|---|
-| Reviewed PRs | `address-review`, `ripple-review`, `propagate-feedback-fixes` |
+| Reviewed PRs | `address-review`, `ripple-review`, `propagate-feedback-fixes`, `stack-prs` |
 | Agents implementing large work end to end | `work-to-prs` |
 | Existing code to understand | `trace-code-flow`, `document-feature` |
 | Linear tickets | `linear-read` |
