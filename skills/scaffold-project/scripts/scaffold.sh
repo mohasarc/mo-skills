@@ -1,7 +1,7 @@
 #!/bin/bash
 # Adds the agent setup to a project folder. Only adds what's missing; never overwrites.
 #   scaffold.sh --list
-#   scaffold.sh <target-dir> [--typescript] [--skill <name>]...
+#   scaffold.sh <target-dir> [--typescript] [--skill <name>]... [--no-skill <name>]...
 set -euo pipefail
 
 SELF="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
@@ -37,16 +37,18 @@ TARGET="$1"; shift
 TYPESCRIPT=0
 SKILLS=()
 EXPLICIT_SKILLS=" "
+EXCLUDED_SKILLS=" "
 while read -r name; do SKILLS+=("$name"); done < "$SELF/basic-skills.txt"
 while [ $# -gt 0 ]; do
   case "$1" in
     --typescript) TYPESCRIPT=1; SKILLS+=(symnav); shift ;;
     --skill) SKILLS+=("$2"); EXPLICIT_SKILLS="$EXPLICIT_SKILLS$2 "; shift 2 ;;
+    --no-skill) EXCLUDED_SKILLS="$EXCLUDED_SKILLS$2 "; shift 2 ;;
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
 done
 
-for name in "${SKILLS[@]}"; do
+for name in "${SKILLS[@]}" $EXCLUDED_SKILLS; do
   skill_dir "$name" > /dev/null || { echo "no such skill: $name" >&2; exit 1; }
 done
 
@@ -97,6 +99,7 @@ echo "added    $added_ignores .gitignore lines"
 
 for name in "${SKILLS[@]}"; do
   destination="$TARGET/.agents/skills/$name"
+  if is_listed "$EXCLUDED_SKILLS" "$name" && [ ! -e "$destination" ]; then echo "skipped  skill $name (--no-skill)"; record_added "skill:$name"; continue; fi
   if [ -e "$destination" ]; then echo "kept     skill $name"; record_added "skill:$name"; continue; fi
   if was_added "skill:$name" && ! is_listed "$EXPLICIT_SKILLS" "$name"; then echo "skipped  skill $name (removed earlier)"; continue; fi
   rsync -aL --exclude runs/ --exclude tmp/ --exclude evals/ --exclude node_modules/ --exclude .DS_Store \

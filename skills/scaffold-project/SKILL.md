@@ -46,10 +46,10 @@ Throwaway projects usually need no extras. Judge skills not in this table by the
 Resolve `scripts/` relative to this file:
 
 ```bash
-scripts/scaffold.sh <target-dir> [--typescript] [--skill <name>]...
+scripts/scaffold.sh <target-dir> [--typescript] [--skill <name>]... [--no-skill <name>]...
 ```
 
-`--typescript` adds the symnav rule and skill. The script only adds what's missing and reports what it kept. `.agents/scaffold-manifest` records what was added, so a rerun doesn't restore anything removed since. `--skill <name>` brings a removed skill back; for a rule, delete its line from the manifest. If it kept an `AGENTS.md`, `CLAUDE.md`, or `.claude/` entry that isn't the expected link, tell the user instead of changing it.
+`--typescript` adds the symnav rule and skill. `--no-skill <name>` leaves out a basic skill. The script only adds what's missing and reports what it kept. `.agents/scaffold-manifest` records what was added, so a rerun doesn't restore anything removed since. `--skill <name>` brings a removed skill back; for a rule, delete its line from the manifest. If it kept an `AGENTS.md`, `CLAUDE.md`, or `.claude/` entry that isn't the expected link, tell the user instead of changing it.
 
 ## 4. Fill in the project specifics
 
