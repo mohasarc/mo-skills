@@ -25,3 +25,9 @@ Write the failing test first, then make it pass. Every behavior the code perform
 - Loose coupling beats DRY across module boundaries — do not deduplicate across independent modules.
 - Prefer clear, small modules with explicit types at public boundaries.
 - Reuse existing utilities before adding dependencies or new abstractions.
+- No magic numbers. Extract literals into named constants (`MAX_RETRY_ATTEMPTS`).
+- Extract multi-part `if` conditions into named booleans.
+- More than one optional parameter goes in an options object.
+- No side effects in ternaries, even wrapped in an arrow. Use `if` to choose between calls. Ternaries only pick values.
+- Delete code and resources a change leaves unused.
+- Keep terms used across the codebase. Suggest a rename before making one, don't invent new words.
