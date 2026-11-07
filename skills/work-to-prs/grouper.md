@@ -6,7 +6,7 @@ Read everything you need: the plan, completion notes, review reports, run config
 
 ## Size guidance
 
-A PR is sized by reviewer cognitive load. The budget is `config.md` PR size; within it, readability decides. Count every commit and changed line, tests included: reviewers read tests too. Go past the ceiling only as the configured strictness allows and when the range can't split into self-contained PRs; say why in the return. Too small means no consumer: a PR of only contracts or only tests wastes a review round. A component used only in its stories has a consumer. A small self-contained PR is fine; never stack a phase just to avoid one.
+A PR is sized by reviewer cognitive load. The budget is `config.md` PR size; within it, readability decides. Count every commit and changed line, tests included: reviewers read tests too. Go past the ceiling only as the configured strictness allows and when the range can't split into self-contained PRs; say why in the return. Too small means no consumer: a PR of only contracts or only tests wastes a review round. A small self-contained PR is fine; never stack a phase just to avoid one.
 
 ## `decide`
 
