@@ -52,12 +52,7 @@ For each chosen representation, determine:
 - What the reader needs to know first, and what can remain optional detail.
 - The grounding for its claims and any simplification that changes how it should be interpreted.
 
-Prefer the simplest representation that supports the required reasoning. Use a concrete example when an abstract description is hard to predict from. Use multiple views when they answer distinct questions; remove views that merely repeat the same explanation. Interaction is useful when varying a condition, crossing a boundary, or inspecting an alternative reveals something meaningful. Do not require interaction to discover a consequential qualification.
-
-Two representations are often warranted and easy to omit:
-
-- **Before/after.** When an observable result changes, show the same input, task, or state in both revisions. For user interfaces, capture screenshots or video of the same screen and state on the base and on the change, and inspect each before including it: it must show the change, not an empty or loading page. Command output, responses, and rendered documents compare the same way, as paired excerpts.
-- **Change tree.** When the work spans several directories, or adds, moves, or removes files, show where it lives as a repository-root tree before the reader opens the diff. Format in [reasoning-techniques.md](references/reasoning-techniques.md#change-tree).
+Prefer the simplest representation that supports the required reasoning. Use a concrete example when an abstract description is hard to predict from. Use multiple views when they answer distinct questions; remove views that merely repeat the same explanation. Interaction is useful when varying a condition, crossing a boundary, or inspecting an alternative reveals something meaningful. Do not require interaction to discover a consequential qualification. When an observable result changes, a before/after of the same state often helps, with screenshots or video for interfaces; when work spans several areas, a [change tree](references/reasoning-techniques.md#change-tree) can orient the reader.
 
 For an ownership comparison, keep responsibilities identifiable across both states, distinguish the implementation owner from the active caller, and expose the stage where the caller switches. For a recovery example, hold request identity constant, vary whether acceptance has occurred, and show the permitted recovery paths and retained state.
 
