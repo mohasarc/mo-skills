@@ -52,15 +52,7 @@ Use the stacking tool the repo's rules name, and its docs for commands. No tool 
 
 ## Writing the PR description
 
-The repo's `.github/PULL_REQUEST_TEMPLATE.md` defines three sections: **Summary**, **Why**, **QA**. Fill all three; don't add others. The body focuses only on this PR's own context.
-
-**Pyramid structure — every section, every paragraph.** Lead with the conclusion; let detail follow. The first sentence of each section is the TL;DR — what a reviewer holds if they stop reading there. Each subsequent line sharpens resolution on what was already said; nothing important arrives late. The same shape across sections: Summary alone gives the picture, +Why explains motivation, +QA confirms verification. A reviewer who stops at any point holds a complete (if lower-resolution) understanding proportional to where they stopped.
-
-This isn't a template ritual — it's how to respect a reader's time. Reviewers self-throttle on detail; build-up structures (conclusion buried at the end) force them to read everything to find out what they're even looking at. Lead with the answer; let them choose how deep to go.
-
-**Mermaid diagrams: only when they earn their place.** Add one when prose alone can't convey a structure efficiently — typically several entities with non-obvious relationships (a sequence across three or more components, a new module dependency graph, a state machine). The diagram *supports* the prose; it doesn't replace it. The first sentence of Summary still has to convey the change in words — a reader who scans text-only, or who can't see images, must still get the full picture.
-
-Skip the diagram for: single-file changes, anything describable in one sentence, two-participant flows ("X calls Y" — prose is clearer), or decoration. If it doesn't reduce the prose burden, cut it. When included, place it inside Summary or Why where it supports the prose, not as a standalone "Architecture" section.
+Write it with the describe-work skill. The body covers this PR's own context only.
 
 ## Don't
 
