@@ -19,7 +19,7 @@ Slice vertically: a phase named after a structural part is horizontal; one named
 - Infrastructure rides in the first slice that consumes it; a standalone infrastructure phase needs justification that no slice can carry it.
 - First slice is the minimal end-to-end happy path; later slices deepen it. Test cases spanning distinct behaviors signal a split.
 - Order by dependency; among independent slices, most uncertain integration first.
-- When the caller names a PR size budget, each phase is expected to fit in one PR. A phase that won't splits into thinner slices: the happy path with basic handling first, edge cases and hardening after.
+- When the caller names a PR size budget, a phase expected to exceed it orders its steps as thinner slices, the happy path with basic handling first, edge cases and hardening after, so a PR can end at any step.
 - Work with no observable behavior of its own — refactor, migration — slices by risk or subsystem; record the classification.
 
 The plan does not decide commits or PRs. The implementer turns steps into commits under the repository's commit rules; PR boundaries are decided after phases land, from the real diff.
