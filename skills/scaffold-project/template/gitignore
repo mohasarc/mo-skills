@@ -9,4 +9,5 @@
 .DS_Store
 plans/
 .agents/feedback.md
+.agents/temp/
 .agents/scaffold-manifest
