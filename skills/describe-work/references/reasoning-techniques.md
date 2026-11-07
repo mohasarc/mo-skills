@@ -20,7 +20,7 @@ The reader needs to locate substance and decide where to look. This family is us
 
 | Technique | Reviewer question | Conceptual form | What it reveals |
 | --- | --- | --- | --- |
-| Contribution map | Where does the substantive change live? | File or coherent group paired with contribution and reason | Core decisions versus integration, mechanical propagation, and evidence |
+| Contribution map | Where does the substantive change live? | Change tree, or file or coherent group paired with contribution and reason | Core decisions versus integration, mechanical propagation, and evidence |
 | Review-unit decomposition | Which concerns can I assess separately? | Units organized by purpose, with dependencies between them | Independent questions and unavoidable coupling |
 | Regular cases and exceptions | What repeats, and where does the pattern break? | One representative transformation plus exceptional cases | Consumer-specific behavior hidden among repetitive edits |
 | Relocation and unchanged-scope lens | What is moved, copied, new, edited, or unaffected? | Counterpart mapping with comparison method and exceptions | Semantic change within structural churn |
@@ -28,6 +28,28 @@ The reader needs to locate substance and decide where to look. This family is us
 | Impact footprint | What else may be affected? | Changed responsibility, contract, or setting connected to dependents | Reach beyond touched files and relevant review boundaries |
 
 Line count is not significance. A test can change a guarantee; an adapter can change defaults. Editorial review units do not establish independently landable patches. A static dependency footprint is not a demonstrated runtime impact. Explain what any count or classification actually measures.
+
+### Change tree
+
+A placement view of the areas that matter, anchored at the repository root. Unchanged parent directories give context; only nodes with ownership or review signal get a marker and a comment.
+
+```text
+.
+└── src/
+    ├── ** payment-form.ts             # wires retry flag
+    ├── ++ invoice-retry/
+    │   └── ++ ... 12 files            # owns retry scheduling
+    └── ~~ receipts/
+        └── ~~ ... 3 files             # moved from src/billing/
+```
+
+- Markers: `++` added, `**` changed, `~~` moved, `--` removed.
+- Fold groups into `... N files`, counting files even when generated or mechanical.
+- Place moved entries at their new path and note the old one.
+- Include tests only when their placement carries signal; colocated tests fold into their source group.
+- Comments name purpose or ownership, not the marker's status.
+
+Skip it for single-file changes and when paths add no signal.
 
 ## Build understanding: expose the relevant relationships
 
@@ -83,7 +105,7 @@ Useful for data migrations, serialization, user interfaces, accessibility, perfo
 | --- | --- | --- | --- |
 | Representation mapping | How does an old form become a new one? | Paired records, schema mapping, or transformation walkthrough | Meaning, defaults, information loss, invalid inputs, reversibility |
 | Compatibility transition | Which versions or participants can coexist? | Producer/consumer compatibility cases and staged transition | Read/write compatibility, mixed-version conditions, migration and rollback limits |
-| Experience comparison | What will someone experience differently? | The same user task before and after, including relevant alternate states | Observable behavior, feedback, error recovery, and accessibility consequences |
+| Experience comparison | What will someone experience differently? | The same user task before and after, as paired screenshots, video, or output, including relevant alternate states | Observable behavior, feedback, error recovery, and accessibility consequences |
 | Scaling or sensitivity view | How does behavior vary with workload or parameters? | Curves, distributions, parameter comparisons, or a controlled model | Units, workload, baseline, uncertainty, bottlenecks, meaningful thresholds |
 | Resource budget | Where does time, memory, cost, or capacity go? | Allocation and consumption comparison | Measured versus modeled quantities, totals, constraints, tradeoffs |
 | Operational scenario | What happens in the environment where this runs? | Deployment or lifecycle walkthrough with selected failures | Configuration, rollout order, availability, recovery, environmental assumptions |

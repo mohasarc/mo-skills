@@ -52,7 +52,7 @@ For each chosen representation, determine:
 - What the reader needs to know first, and what can remain optional detail.
 - The grounding for its claims and any simplification that changes how it should be interpreted.
 
-Prefer the simplest representation that supports the required reasoning. Use a concrete example when an abstract description is hard to predict from. Use multiple views when they answer distinct questions; remove views that merely repeat the same explanation. Interaction is useful when varying a condition, crossing a boundary, or inspecting an alternative reveals something meaningful. Do not require interaction to discover a consequential qualification.
+Prefer the simplest representation that supports the required reasoning. Use a concrete example when an abstract description is hard to predict from. Use multiple views when they answer distinct questions; remove views that merely repeat the same explanation. Interaction is useful when varying a condition, crossing a boundary, or inspecting an alternative reveals something meaningful. Do not require interaction to discover a consequential qualification. When an observable result changes, a before/after of the same state often helps, with screenshots or video for interfaces; when work spans several areas, a [change tree](references/reasoning-techniques.md#change-tree) can orient the reader.
 
 For an ownership comparison, keep responsibilities identifiable across both states, distinguish the implementation owner from the active caller, and expose the stage where the caller switches. For a recovery example, hold request identity constant, vary whether acceptance has occurred, and show the permitted recovery paths and retained state.
 

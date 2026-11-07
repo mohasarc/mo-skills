@@ -29,7 +29,7 @@ The dialogue ends only on a two-sided, deterministic handshake keyed to a decisi
 
 1. **Load `/to-phased-plan`.** Produce the phased plan from the agreed decisions in your context. Record any open questions in the plan where the relevant phase would resolve them.
 2. **Branch and commit.** Sync the stack first. Branch off `main`. Commit the plan file as `docs: add phased plan for stage <stage-id>`. Never commit to `main`. No `Co-Authored-By` trailer; short title.
-3. **Open the bottom PR.** Submit as a draft via the `stack-prs` skill. This is the root of the stack; phases will stack on top. Write the PR description per the repo's `PULL_REQUEST_TEMPLATE.md`.
+3. **Open the bottom PR.** Submit as a draft via the `stack-prs` skill. This is the root of the stack; phases will stack on top. Write the PR description with the describe-work skill.
 
 ## Report back
 
