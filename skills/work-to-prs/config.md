@@ -28,6 +28,11 @@ How long phase review continues.
 - Material findings remaining after round two carry into the next phase.
 - The final phase has no review-round limit and must pass with all carried findings resolved.
 
+## PR size
+Reviewer budget per PR. The planner sizes phases against it; the grouper cuts against it.
+- Target: ~10 commits, ~500 changed lines. Ceiling: 20 commits.
+- Readability decides within the budget. Test commits and lines count in full.
+
 ## Conventions
 Repo facts. Discovered from repo docs when unset; the agent asks before writing them here.
 - Integration branch: discover (repo docs, else repository default branch)

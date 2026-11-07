@@ -6,7 +6,7 @@ Read everything you need: the plan, completion notes, review reports, run config
 
 ## Size guidance
 
-A PR is sized by reviewer cognitive load, not by lines. Around 10–15 commits is comfortable; 20 or more is fine when most commits are mechanical (renames, moves, type-only, test-only). Too small is also a failure: a PR of only contracts or only tests with no consumer wastes a review round. Neither bound is a gate — judge the range as a reviewer who has to hold it in their head.
+A PR is sized by reviewer cognitive load. The budget is `config.md` PR size; within it, readability decides. Count every commit and changed line, tests included: reviewers read tests too. Go past the ceiling only when the range can't split into self-contained PRs, and say why in the return. Too small is also a failure: a PR of only contracts or only tests with no consumer wastes a review round.
 
 ## `decide`
 
@@ -20,7 +20,7 @@ Return exactly one of:
 - `CUT` — the range ends here. Give one line why, a proposed branch slug, and a PR title.
 - `CUT_AT <phase-or-step-end SHA>` — the range is already too large; end the PR at an earlier phase boundary or step-end SHA recorded in completion notes. Commits after that SHA start the next PR. Give the reason, slug, and title for the PR ending there.
 
-Criteria, in order: the range reads as one reviewable capability; the next phase would start a different concern or push the range past comfort; size guidance as tiebreak. A user-imposed split is a constraint — follow it, and only note disagreement in the return. The last phase of the plan always ends in `CUT`.
+Criteria, in order: the range reads as one reviewable capability; the next phase would start a different concern or push the range past the budget. A user-imposed split is a constraint — follow it, and only note disagreement in the return. The last phase of the plan always ends in `CUT`.
 
 You may reshape history to make a cut possible or cleaner — split one commit into two, reorder, squash review debris — under these rules:
 
