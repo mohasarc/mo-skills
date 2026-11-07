@@ -83,7 +83,7 @@ Useful for data migrations, serialization, user interfaces, accessibility, perfo
 | --- | --- | --- | --- |
 | Representation mapping | How does an old form become a new one? | Paired records, schema mapping, or transformation walkthrough | Meaning, defaults, information loss, invalid inputs, reversibility |
 | Compatibility transition | Which versions or participants can coexist? | Producer/consumer compatibility cases and staged transition | Read/write compatibility, mixed-version conditions, migration and rollback limits |
-| Experience comparison | What will someone experience differently? | The same user task before and after, including relevant alternate states | Observable behavior, feedback, error recovery, and accessibility consequences |
+| Experience comparison | What will someone experience differently? | The same user task before and after, as paired screenshots, video, or output, including relevant alternate states | Observable behavior, feedback, error recovery, and accessibility consequences |
 | Scaling or sensitivity view | How does behavior vary with workload or parameters? | Curves, distributions, parameter comparisons, or a controlled model | Units, workload, baseline, uncertainty, bottlenecks, meaningful thresholds |
 | Resource budget | Where does time, memory, cost, or capacity go? | Allocation and consumption comparison | Measured versus modeled quantities, totals, constraints, tradeoffs |
 | Operational scenario | What happens in the environment where this runs? | Deployment or lifecycle walkthrough with selected failures | Configuration, rollout order, availability, recovery, environmental assumptions |
