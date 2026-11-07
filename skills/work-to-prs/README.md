@@ -36,7 +36,7 @@ Edit `config.md` beside `SKILL.md`. It ships with working defaults; every line i
 - Publication — what `publish` does (draft PRs / ready PRs / push only) and when (all at once on command / per part as each is cut).
 - Review — non-final phases get at most two reviewer rounds; material findings carry into the next phase, while the final phase reviews until it passes and clears them.
 - Runs — where run output lives and whether to keep it. Default: keep everything.
-- PR size — commit and line budget per PR. The planner sizes phases to it, the grouper cuts to it. Defaults to ~10 commits and ~500 lines, ceiling 20 commits. Strictness says how far past the ceiling a range may go and when.
+- PR size — commit and line budget per PR. The grouper cuts to it; the planner slices larger phases so a PR can end mid-phase. Defaults to ~10 commits and ~500 lines, ceiling 20 commits. Strictness says how far past the ceiling a range may go and when.
 - Conventions — integration branch, branch naming, verification commands. Left on "discover", the agent reads your repo docs and asks before recording what it found.
 - Capabilities — optional tools agents may use, all off by default.
 - Extra guidance — freeform project rules passed verbatim to every agent. Rules here override the workflow's defaults, so this is also where you relax core behavior (e.g. drop TDD) if you must.
