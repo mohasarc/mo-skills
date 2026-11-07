@@ -27,7 +27,7 @@ The reviewer may flag a different commit split than the plan — that's allowed;
 
 ## Land and report
 
-- After `REVIEW-PASS`, open the stacked **draft** PR via the `stack-prs` skill. Write the description per the repo's `PULL_REQUEST_TEMPLATE.md`.
+- After `REVIEW-PASS`, open the stacked **draft** PR via the `stack-prs` skill. Write the description with the describe-work skill.
 - Report back compactly: branch name, commit titles, PR URL. On failure: `phase-failed` plus a short reason.
 
 ## What you never do
