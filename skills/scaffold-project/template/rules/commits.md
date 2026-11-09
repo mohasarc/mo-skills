@@ -36,6 +36,7 @@ How to structure and write commits. When the repository ships its own commit rul
 - Imperative title, no type prefix (`feat:`, `fix:`, `test:`)
 - Title-only by default, keep messages concise. Add a body only when the change is weird, confusing, or unusual — then state why it was done. Everything else (general rationale, root cause narrative) belongs in the PR description
 - Be specific and plain — name real symbols: "Rename getUserData to fetchUserProfile", not "Rename function" or invented vocabulary
+- Red test commits: "Test" plus the subject and the behavior it pins: "Test parseConfig rejects duplicate keys", not "Add failing test for parseConfig"
 - Review-fix commits: title plus link to the GitHub comment as body
 
 ## Branching
