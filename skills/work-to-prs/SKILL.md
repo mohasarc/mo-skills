@@ -106,4 +106,4 @@ runs/<run>/
     visuals/<phase-nn>-<name>.png
 ```
 
-`grouping-<nn>.md` holds the grouper's `decide` return after phase `<nn>`. `visuals/` holds uncommitted screenshots referenced by local path until publish attaches them. Retention follows config's Runs section; default keep everything. Completion notes use the repository's completion template verbatim when one exists, otherwise `templates/phase-completion.md` verbatim.
+`grouping-<nn>.md` holds the grouper's `decide` return after phase `<nn>`. `visuals/` holds uncommitted screenshots referenced by local path until publish attaches them. Retention follows config's Runs section; default keep everything. Completion notes use the describe-work skill; [implementer.md](implementer.md) defines the required handoff records.

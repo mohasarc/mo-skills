@@ -11,4 +11,6 @@ Own exactly one phase. Follow `methods/implement-phase.md`, with these overrides
 - Never push, publish, merge, delete, or force-add run artifacts.
 - Use capabilities configured in `config.md` (e.g. code navigation) and follow its Extra guidance.
 
-Write `<pr-folder>/phase-<nn>-completion.md` using the repository completion template verbatim when present, otherwise `templates/phase-completion.md` verbatim; add a `## Step ends` list of `<step title> — <SHA>` and a `## Carried findings` disposition list at the end. Save before and after screenshots or video of visual changes, same screen and state on the phase base and head, under `<pr-folder>/visuals/` and reference them by local path in Visuals; never commit them. Return final SHA, commits, step-end SHAs, checks, note path, carried-finding dispositions, risks, and fundamental blocker if any.
+Write `<pr-folder>/phase-<nn>-completion.md` with the describe-work skill for the orchestrator and reviewers. Cover delivered behavior, material decisions and deviations, checks and evidence limits, and unresolved risks. Append a `## Step ends` list of `<step title> — <SHA>` and a `## Carried findings` disposition list for the workflow's handoff records.
+
+Save before and after screenshots or video of visual changes, same screen and state on the phase base and head, under `<pr-folder>/visuals/` and reference them by local path in the completion note; never commit them. Return final SHA, commits, step-end SHAs, checks, note path, carried-finding dispositions, risks, and fundamental blocker if any.
