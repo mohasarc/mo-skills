@@ -52,6 +52,8 @@ Any equivalent tool works; the config sentence just has to name it.
 
 ## Requirements
 
+Install `describe-work` alongside this skill. Implementers use it for phase completion notes; groupers use it for PR descriptions.
+
 Works on any agent harness that can load markdown skills. Harnesses that can spawn subagents get the full design: isolated planner/companion dialogue and fresh implementer/reviewer/grouper contexts per phase. Harnesses without subagents degrade to playing the roles sequentially in one context; the run still completes and the handoff report discloses the lost isolation.
 
 Note: reinstalling or updating the skill can overwrite your edited `config.md`. Diff and carry your rules over after an update.
