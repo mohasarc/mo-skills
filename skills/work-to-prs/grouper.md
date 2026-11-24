@@ -20,7 +20,7 @@ Return exactly one of:
 - `CUT` — the range ends here. Give one line why, a proposed branch slug, and a PR title.
 - `CUT_AT <phase-or-step-end SHA>` — the range is already too large; end the PR at an earlier phase boundary or step-end SHA recorded in completion notes. Commits after that SHA start the next PR. Give the reason, slug, and title for the PR ending there.
 
-Criteria, in order: the range reads as one reviewable capability; the next phase would start a different concern or push the range past the budget. A user-imposed split is a constraint — follow it, and only note disagreement in the return. The last phase of the plan always ends in `CUT`.
+Criteria, in order: the range holds one concern; the next phase would start a different concern; the range would pass the budget. A concern shift cuts even well within budget. A fix to existing behavior is its own concern, even when a feature exposed it: reshape history so it lands as its own PR before the feature. A user-imposed split is a constraint — follow it, and only note disagreement in the return. The last phase of the plan always ends in `CUT`.
 
 You may reshape history to make a cut possible or cleaner — split one commit into two, reorder, squash review debris — under these rules:
 
@@ -32,4 +32,4 @@ You may reshape history to make a cut possible or cleaner — split one commit i
 
 Inputs: a cut group's base/head range, its commits, completion notes, phase review reports, checks, and work-item link.
 
-Write `<pr-folder>/proposed-pr-description.md` from the diff and the notes with the describe-work skill, for a reviewer who reads it before walking the commits. Follow the repository's PR-description and writing rules. Use capabilities configured in `config.md` (e.g. code navigation). Reference before/after screenshots and video from the completion notes by their local path under `visuals/`; publish uploads them. Return the title and the file path only.
+Write `<pr-folder>/proposed-pr-description.md` from the diff and the notes with the describe-work skill, for the PR's reviewer. Unless repository rules say otherwise, assume they read it before walking the commits. Follow the repository's PR-description and writing rules. Use capabilities configured in `config.md` (e.g. code navigation). Reference before/after screenshots and video from the completion notes by their local path under `visuals/`; publish uploads them. Return the title and the file path only.
