@@ -24,7 +24,7 @@ Treat the following as review activities, not required sections or a fixed seque
 | Calibrate confidence | Has claims without knowing their support | Knows what is established and what remains uncertain | Discriminating evidence, observation boundaries, qualifications |
 | Decide and intervene | Has concerns without a precise next action | Can identify what to accept, clarify, change, or investigate | Concern linked to decision, consequence, and needed resolution |
 
-Prioritize questions whose answers could change the reader's assessment. Account for their familiarity: introduce domain concepts an unfamiliar reader needs; let a knowledgeable reader start with deltas, exceptions, and evidence. Ask for clarification only when a missing goal, comparison, or audience distinction materially affects the account and cannot be reasonably inferred.
+Establish whether the reader will read the implementation. When they won't, the account stands in for it: introduce each concept before naming the code that carries it, and never rely on the reader opening a file to resolve a claim. Prioritize questions whose answers could change the reader's assessment. Account for their familiarity: introduce domain concepts an unfamiliar reader needs; let a knowledgeable reader start with deltas, exceptions, and evidence. Ask for clarification only when a missing goal, comparison, or audience distinction materially affects the account and cannot be reasonably inferred.
 
 ## Match the reasoning to the change
 
@@ -52,7 +52,7 @@ For each chosen representation, determine:
 - What the reader needs to know first, and what can remain optional detail.
 - The grounding for its claims and any simplification that changes how it should be interpreted.
 
-Prefer the simplest representation that supports the required reasoning. Use a concrete example when an abstract description is hard to predict from. Use multiple views when they answer distinct questions; remove views that merely repeat the same explanation. Interaction is useful when varying a condition, crossing a boundary, or inspecting an alternative reveals something meaningful. Do not require interaction to discover a consequential qualification. When an observable result changes, a before/after of the same state often helps, with screenshots or video for interfaces; when work spans several areas, a [change tree](references/reasoning-techniques.md#change-tree) can orient the reader.
+Prefer the simplest representation that supports the required reasoning. For a human reader, concrete examples, a before/after of the same case, and diagrams usually carry a point faster than prose; reach for them first. Use a concrete example when an abstract description is hard to predict from. Use multiple views when they answer distinct questions; remove views that merely repeat the same explanation. Interaction is useful when varying a condition, crossing a boundary, or inspecting an alternative reveals something meaningful. Do not require interaction to discover a consequential qualification. When an observable result changes, a before/after of the same state often helps, with screenshots or video for interfaces; when work spans several areas, a [change tree](references/reasoning-techniques.md#change-tree) can orient the reader.
 
 For an ownership comparison, keep responsibilities identifiable across both states, distinguish the implementation owner from the active caller, and expose the stage where the caller switches. For a recovery example, hold request identity constant, vary whether acceptance has occurred, and show the permitted recovery paths and retained state.
 
@@ -62,7 +62,7 @@ Lead with the result or consequential change and enough intent to make it meanin
 
 Group regular cases and expose exceptions. A repeated migration can be explained once, with exceptional consumers called out. Distinguish core logic from integration, mechanical propagation, and evidence, but assign those roles relative to a decision: a test, adapter, or configuration line can contain the most important change.
 
-Provide progressive depth on the same subject: consequence, mechanism, then precise implementation or evidence. Keep a qualification that could reverse the reader's judgment beside the claim it qualifies. Deeper detail may add precision without silently changing the higher-level story. Give the reader enough to stop at the level appropriate to their decision; a long inventory labeled as an overview does not reduce the reasoning burden.
+Order by leverage: what most affects the reader's judgment first, lesser detail below it, and detail they would rarely need folded where the medium allows, or left out. Shorter is better. How the work was produced (process steps, review rounds, plan deviations, routine check results) stays out unless it changes a judgment. Provide progressive depth on the same subject: consequence, mechanism, then precise implementation or evidence. Keep a qualification that could reverse the reader's judgment beside the claim it qualifies. Deeper detail may add precision without silently changing the higher-level story. Give the reader enough to stop at the level appropriate to their decision; a long inventory labeled as an overview does not reduce the reasoning burden.
 
 Preserve distinctions that affect conclusions:
 
